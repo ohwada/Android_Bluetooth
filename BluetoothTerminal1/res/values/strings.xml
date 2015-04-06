@@ -1,0 +1,12 @@
+<!-- 2015-03-01 K.OHWADA -->
+
+<resources>
+
+<!-- AndroidManifest -->
+    <string name="app_name">BT Terminal</string>
+
+<!--  Main Activity -->
+    <string name="msg_enter_text">Enter Text</string>  
+    <string name="button_send">Send</string>
+	     
+</resources>

@@ -1,0 +1,17 @@
+<!-- 2015-03-01 K.OHWADA -->
+
+<resources>
+
+<!-- AndroidManifest -->
+    <string name="app_name">BT Tester</string>
+
+<!--  Main Activity -->
+    <string name="radiobutton_profile_chat">Chat</string>
+    <string name="radiobutton_profile_serial">Serial Port</string>
+    <string name="radiobutton_mode_echo">Echoback</string>
+    <string name="radiobutton_mode_tester">Tester</string>
+    <string name="button_start">Start</string>
+    <string name="button_stop">Stop</string>
+    <string name="button_reset">Reset</string>
+    
+</resources>

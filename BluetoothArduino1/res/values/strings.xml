@@ -1,0 +1,16 @@
+<!-- 2015-03-01 K.OHWADA -->
+
+<resources>
+
+<!-- AndroidManifest -->
+    <string name="app_name">BT Arduino</string>
+
+<!--  Main Activity --> 
+    <string name="label_on">On</string>
+    <string name="label_off">Off</string>
+
+<!-- menu -->
+    <string name="menu_log">Show Log</string>    
+    <string name="menu_graph">Show Graph</string>   
+	     
+</resources>

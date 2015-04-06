@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 2015-03-01 K.OHWADA -->
+
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="4dp" >
+
+    <RadioGroup
+        android:id="@+id/RadioGroup_profile"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent" 
+        android:orientation="horizontal" >
+
+        <RadioButton 
+            android:id="@+id/RadioButton_profile_chat"
+            android:text="@string/radiobutton_profile_chat"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+
+        <RadioButton 
+            android:id="@+id/RadioButton_profile_serial"
+            android:text="@string/radiobutton_profile_serial"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/RadioGroup_mode"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent" 
+        android:orientation="horizontal" >
+
+        <RadioButton 
+            android:id="@+id/RadioButton_mode_echo"
+            android:text="@string/radiobutton_mode_echo"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+
+        <RadioButton 
+            android:id="@+id/RadioButton_mode_tester"
+            android:text="@string/radiobutton_mode_tester"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="4dp" >
+
+        <Button 
+            android:id="@+id/Button_connect_secure"
+            android:text="@string/bt_button_connect_secure"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button 
+            android:id="@+id/Button_connect_insecure"
+            android:text="@string/bt_button_connect_insecure"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="4dp" >
+    
+        <Button
+            android:id="@+id/Button_start"
+            android:text="@string/button_start" 
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/Button_stop"
+            android:text="@string/button_stop" 
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/Button_reset"
+            android:text="@string/button_reset" 
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+			            
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/ListView_report"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:transcriptMode="alwaysScroll" />
+
+    <ScrollView
+        android:id="@+id/ScrollView_debug"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+        <TextView
+            android:id="@+id/TextView_debug"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+    </ScrollView>
+ 
+</LinearLayout>

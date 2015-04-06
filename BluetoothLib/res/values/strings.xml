@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 2015-03-01 K.OHWADA -->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+<!-- AndroidManifest -->
+    <string name="bt_app_name">Bluetooth</string>
+    <string name="bt_activity_device_list">Device List</string> 
+    <string name="bt_activity_settings">Settings</string> 
+
+<!--  Main Activity -->
+    <string name="bt_button_connect_secure">Connect secure to Bluetooth</string>
+    <string name="bt_button_connect_insecure">Connect insecure to Bluetooth</string>
+
+<!-- menu -->
+    <string name="bt_menu_connect_secure">Connect BT Device - Secure</string>
+    <string name="bt_menu_connect_insecure">Connect BT Device - Insecure</string>
+    <string name="bt_menu_disconnect">Disconnect BT Device</string>
+    <string name="bt_menu_clear">Clear BT Address</string>
+    <string name="bt_menu_discoverable">Make BT discoverable</string>
+    <string name="bt_menu_settings">BT Settings</string>
+
+<!-- DeviceList -->
+    <string name="bt_list_scanning">scanning for devices ...</string>
+    <string name="bt_list_select_device">select a device to connect</string>
+    <string name="bt_list_no_paired">No devices have been paired</string>
+    <string name="bt_list_not_found">No devices found</string>
+    <string name="bt_list_title_paired_devices">Paired Devices</string>
+    <string name="bt_list_title_other_devices">Other Available Devices</string>
+    <string name="bt_list_button_scan">Scan for devices</string>
+
+<!--  Bluetooth activty -->    
+    <string name="bt_title_connecting">connecting...</string>
+    <string name="bt_title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
+    <string name="bt_title_not_connected">not connected</string>
+
+    <string name="bt_toast_not_available">Bluetooth is not available.</string>
+    <string name="bt_toast_not_enabled">Bluetooth was not enabled.</string>
+    <string name="bt_toast_failed">Unable to connect device</string>
+    <string name="bt_toast_lost">Device connection was lost</string>
+    <string name="bt_toast_connected">Connected to </string>
+    <string name="bt_toast_not_connected">You are not connected to a device</string>
+    <string name="bt_toast_no_action">No Action in debug</string>
+
+<!-- setting -->
+     <string name="bt_pref_category">Bluetooth</string>
+     <string name="bt_pref_show_debug_title">Show Comm Msg with BT</string>
+     <string name="bt_pref_show_debug_summary">Show Communication Message with Bluetooth Device</string>
+     <string name="bt_pref_show_debug_on">Show</string>
+     <string name="bt_pref_show_debug_off">Not Show</string>
+     <string name="bt_pref_show_debug_default">false</string>
+	     
+</resources>
