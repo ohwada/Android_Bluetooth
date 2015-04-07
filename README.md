@@ -11,7 +11,7 @@ Bluetooth LIbrary<br>
 Chat app base on Google BluetoothChat sample<br>
 https://android.googlesource.com/platform/development/+/master/samples/BluetoothChat/
 
-![chat1](https://raw.githubusercontent.com/ohwada/Android_Bluetooth/master/docs/bluetooth_chat_1_conversation.png){: style=”width: 150px; vertical-align:middle;”}
+<img src="https://raw.githubusercontent.com/ohwada/Android_Bluetooth/master/docs/bluetooth_chat_1_conversation.png" width="150" />
 
 - BluetoothChatSample2<br>
 Chat app base on Google BluetoothChat sample<br> 
