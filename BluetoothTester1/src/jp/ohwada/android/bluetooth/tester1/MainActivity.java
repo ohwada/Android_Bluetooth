@@ -148,7 +148,7 @@ public class MainActivity extends BtActivity {
     @Override
     public void onStart() {
         super.onStart();
-        bt_enableService();	
+        bt_enableService();
     }
 
     /**
@@ -158,6 +158,9 @@ public class MainActivity extends BtActivity {
     public void onResume() {
         super.onResume();
         bt_startService();
+        if ( mMode == MODE_ECHO ) {
+            bt_hideButtonConnect();
+        }	
     }
 
     /**
@@ -184,7 +187,7 @@ public class MainActivity extends BtActivity {
      */
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
-         bt_execOptionsItemSelectedFull( item );
+        bt_execOptionsItemSelectedFull( item );
         return true;
     }
 
@@ -260,7 +263,6 @@ public class MainActivity extends BtActivity {
     /**
      * execStop
      */
-
     private void execStop() {
         stopTimer();
         if ( isTestetStart() ) {
@@ -318,6 +320,16 @@ public class MainActivity extends BtActivity {
             if ( num > MAX_COUNT ) {
                 execStop();
             }
+        }
+    }
+
+    /**
+     * execEvent
+     * @param int code
+     */
+    protected void bt_execEvent( int code ) {
+        if ( mMode == MODE_ECHO ) {
+            bt_hideButtonConnect();
         }
     }
 
