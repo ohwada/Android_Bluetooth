@@ -57,7 +57,7 @@ public class BtTextViewDebug {
 
     /**
      * setTextViewDebugVisibility
-     */	
+     */
     public void setVisibility( int visibility ) {
         if ( mScrollViewDebug != null ) { 
             mScrollViewDebug.setVisibility( visibility );		 

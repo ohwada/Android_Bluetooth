@@ -95,7 +95,8 @@ public class BtActivity extends Activity {
             R.string.bt_toast_not_connected,
             R.string.bt_toast_no_action );
         bt_mManager.setPrefName( 
-            BtConstant.PREF_ADDR, 
+            BtConstant.PREF_DEVICE_NAME, 
+            BtConstant.PREF_DEVICE_ADDR, 
             BtConstant.PREF_USE_ADDR,
             BtConstant.PREF_SHOW_DEBUG );
         bt_mManager.setDebugEmulator( 
@@ -104,7 +105,6 @@ public class BtActivity extends Activity {
             REQUEST_ADAPTER_ENABLE );
         bt_mManager.setRequestCodeAdapterDiscoverable( 
             REQUEST_ADAPTER_DISCOVERABLE ); 
-        bt_mManager.setTextViewDebugStatus();
         bt_initListener();
     }
 
@@ -161,6 +161,13 @@ public class BtActivity extends Activity {
      */
     protected void bt_setUsePrefAddress( boolean flag ) {
         bt_mManager.setUsePrefAddress( flag );
+    }
+
+    /**
+     * setTextViewDebugStatus
+     */
+    protected void bt_setTextViewDebugStatus() {
+        bt_mManager.setTextViewDebugStatus();
     }
 
     /**
@@ -222,6 +229,24 @@ public class BtActivity extends Activity {
 
 // --- Button Connect ---
     /**
+     * initLinearLayoutConnect
+     * @patam int res_id
+     */
+    protected void bt_initLinearLayoutConnect( int res_id ) {
+        if ( bt_mContentView == null ) return; 
+        bt_mManager.initLinearLayoutConnect( bt_mContentView, res_id );
+    }
+
+    /**
+     * initTextViewConnect
+     * @patam int res_id
+     */
+    protected void bt_initTextViewConnect( int res_id ) {
+        if ( bt_mContentView == null ) return; 
+        bt_mManager.initTextViewtConnect( bt_mContentView, res_id );
+    }
+
+    /**
      * initButtonConnectSecure
      * @patam int res_id
      */
@@ -280,14 +305,6 @@ public class BtActivity extends Activity {
         bt_mManager.setTextViewDebugSend( flag );
     }
 
-    /**
-     * setDebugTextRecv
-     * @param boolean flag
-     */	
-    protected void bt_setTextViewDebugRecv( boolean flag ) {
-        bt_mManager.setTextViewDebugRecv( flag );
-    }
-
 // --- Title bar ---
     /*
      * setTitleUse
@@ -310,7 +327,9 @@ public class BtActivity extends Activity {
      * enableService
      */
     protected boolean bt_enableService() {
-    	return bt_mManager.enableService();
+        bt_mManager.setTextViewDebugStatus();
+        bt_mManager.showButtonConnect();
+        return bt_mManager.enableService();
     }
 
 // --- onResume --- 

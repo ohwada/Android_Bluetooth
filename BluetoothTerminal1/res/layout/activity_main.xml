@@ -8,15 +8,31 @@
     android:layout_height="fill_parent"
     android:padding="4dp" >
 
-    <Button 
-        android:id="@+id/Button_connect_secure"
-        android:text="@string/bt_button_connect_secure"
+    <LinearLayout
+        android:id="@+id/LinearLayout_connect"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" />
+        android:orientation="horizontal"
+        android:layout_margin="10dp" >
+
+        <TextView
+            android:id="@+id/TextView_connect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="16sp" 
+           android:background="@drawable/border" />
+
+        <Button 
+            android:id="@+id/Button_connect_secure"
+            android:text="@string/bt_button_connect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/ListView_report"

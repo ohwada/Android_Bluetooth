@@ -6,7 +6,36 @@
     <string name="app_name">BT Terminal</string>
 
 <!--  Main Activity -->
-    <string name="msg_enter_text">Enter Text</string>  
+    <string name="toast_enter_text">Enter Text</string>  
     <string name="button_send">Send</string>
-	     
+
+<!-- settings -->
+     <string name="menu_clean">Clean terminal</string>
+     <string name="menu_settings">Settings</string>
+
+<!-- settings -->
+     <string name="pref_category_terminal">Terminal</string>
+
+     <string name="pref_display_send_title">Display send message</string>
+     <string name="pref_display_send_summary">Display send message</string>
+     <string name="pref_display_send_on">Display</string>
+     <string name="pref_display_send_off">Not Display</string>
+     <string name="pref_display_send_default">true</string>
+
+     <string name="pref_display_hex_title">Display in hexadecimal</string>
+     <string name="pref_display_hex_summary">Display in hexadecimal</string>
+     <string name="pref_display_hex_on">Display</string>
+     <string name="pref_display_hex_off">Not Display</string>
+     <string name="pref_display_hex_default">false</string>
+
+     <string name="pref_recv_newline_title">Split recv msg in newline</string>
+     <string name="pref_recv_newline_summary">Split the recieved message in the newline code</string>
+     <string name="pref_recv_newline_on">Split</string>
+     <string name="pref_recv_newline_off">Not Split</string>
+     <string name="pref_recv_newline_default">true</string>
+
+     <string name="pref_send_newline_title">Append newline to send msg</string>
+     <string name="pref_send_newline_summary">Append the newline code to the send message</string>
+     <string name="pref_send_newline_default">lf</string>
+
 </resources>

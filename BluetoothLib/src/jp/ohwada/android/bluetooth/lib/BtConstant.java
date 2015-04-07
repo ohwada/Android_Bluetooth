@@ -43,7 +43,8 @@ public class BtConstant {
     public static final int REQUEST_SETTINGS = 105;           
 
     /* SharedPreferences */
-    public static final String PREF_ADDR = "bt_addr";
+    public static final String PREF_DEVICE_NAME = "bt_device_name";
+    public static final String PREF_DEVICE_ADDR = "bt_device_addr";
     public static final String PREF_USE_ADDR = "bt_use_addr";
     public static final String PREF_SHOW_DEBUG = "bt_show_debug";
 

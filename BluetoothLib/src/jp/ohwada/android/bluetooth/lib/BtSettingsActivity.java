@@ -7,44 +7,30 @@ package jp.ohwada.android.bluetooth.lib;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
 
 /**
  * SettingsActivity
  */
 public class BtSettingsActivity extends PreferenceActivity {			
+
     /**
-     * === onCreate ===
-     * @param savedInstanceState Bundle
+     * execCreate
      */
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-        execCreate();
+    protected void execCreate() {
+        execCreate( R.xml.bt_settings );
     }
 
     /**
      * execCreate
      */
-    private void execCreate() {
+    protected void execCreate( int res_id ) {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        SettingsFragment fragment = new SettingsFragment();
+        BtSettingsFragment fragment = new BtSettingsFragment( res_id );
         ft.replace( android.R.id.content, fragment );	
         ft.commit();
         setResult( Activity.RESULT_OK );
     }
 
-    /**
-     * SettingsFragment
-     */
-    private class SettingsFragment extends PreferenceFragment {
-        @Override
-        public void onCreate( Bundle savedInstanceState ) {
-            super.onCreate( savedInstanceState );
-            addPreferencesFromResource( R.xml.bt_settings );
-        }
-    }	
 }

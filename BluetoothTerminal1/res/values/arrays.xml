@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 2015-03-01 K.OHWADA -->
+
+<resources>
+
+    <string-array name="pref_send_newline_entries_">
+        <item>None</item>
+        <item>CR</item>
+        <item>LF</item>
+        <item>CR+LF</item>
+    </string-array>
+
+    <string-array name="pref_send_newline_entryvalues">
+        <item>none</item>
+        <item>cr</item>
+        <item>lf</item>
+        <item>crlf</item>
+    </string-array>
+
+</resources>

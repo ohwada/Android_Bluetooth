@@ -82,6 +82,7 @@ public class MainActivity extends BtActivity {
         /* bluetooth */
         bt_initManager();
         bt_initContentView( R.layout.activity_main );
+        bt_initLinearLayoutConnect( R.id.LinearLayout_connect );
         bt_initButtonConnectSecure( R.id.Button_connect_secure );
         bt_initButtonConnectInsecure( R.id.Button_connect_insecure );
         bt_initScrollViewDebug( R.id.ScrollView_debug );

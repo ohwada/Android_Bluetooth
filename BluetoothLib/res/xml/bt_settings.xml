@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!-- 2015-03-01 K.OHWADA -->
 
 <PreferenceScreen 
@@ -9,8 +8,17 @@
         android:title="@string/bt_pref_category" >
 
         <CheckBoxPreference
+            android:key="bt_use_addr"
+            android:title="@string/bt_pref_use_addr_title"
+            android:summary="@string/bt_pref_use_addr_summary"
+            android:summaryOn="@string/bt_pref_use_addr_on"
+            android:summaryOff="@string/bt_pref_use_addr_off"
+            android:defaultValue="@string/bt_pref_use_addr_default" />
+
+        <CheckBoxPreference
             android:key="bt_show_debug"
             android:title="@string/bt_pref_show_debug_title"
+            android:summary="@string/bt_pref_show_debug_summary"
             android:summaryOn="@string/bt_pref_show_debug_on"
             android:summaryOff="@string/bt_pref_show_debug_off"
             android:defaultValue="@string/bt_pref_show_debug_default" />

@@ -389,7 +389,7 @@ public class BtService {
                         NAME_INSECURE, mUuidInsecure );
                 }
             } catch (IOException e) {
-                log_debug( "Socket Type: " + mSocketType + "listen() failed" );
+                log_error( "Socket Type: " + mSocketType + "listen() failed" );
                 if (D) e.printStackTrace();
             }
             mmServerSocket = tmp;
@@ -411,7 +411,7 @@ public class BtService {
                     // successful connection or an exception
                     socket = mmServerSocket.accept();
                 } catch (IOException e) {
-                    log_debug( "Socket Type: " + mSocketType + "accept() failed" );
+                    log_error( "Socket Type: " + mSocketType + "accept() failed" );
                     if (D) e.printStackTrace();
                     break;
                 }
@@ -432,7 +432,7 @@ public class BtService {
                             try {
                                 socket.close();
                             } catch (IOException e) {
-                                log_debug( "Could not close unwanted socket" );
+                                log_error( "Could not close unwanted socket" );
                                 if (D) e.printStackTrace();
                             }
                             break;
@@ -440,7 +440,7 @@ public class BtService {
                     }
                 }
             }
-            log_debug( "END AcceptThread, socket Type: " + mSocketType );
+            log_info( "END AcceptThread, socket Type: " + mSocketType );
 
         }
 
@@ -452,7 +452,7 @@ public class BtService {
             try {
                 mmServerSocket.close();
             } catch (IOException e) {
-                log_debug( "Socket Type" + mSocketType + "close() of server failed" );
+                log_error( "Socket Type" + mSocketType + "close() of server failed" );
                 if (D) e.printStackTrace();
             }
         }
@@ -488,7 +488,7 @@ public class BtService {
                             mUuidInsecure);
                 }
             } catch (IOException e) {
-                log_debug( "Socket Type: " + mSocketType + "create() failed" );
+                log_error( "Socket Type: " + mSocketType + "create() failed" );
                 if (D) e.printStackTrace();
             }
             mmSocket = tmp;
@@ -498,7 +498,7 @@ public class BtService {
          * run
          */
         public void run() {
-            log_debug( "BEGIN ConnectThread SocketType:" + mSocketType );
+            log_info( "BEGIN ConnectThread SocketType:" + mSocketType );
             setName("ConnectThread" + mSocketType);
 
             // Always cancel discovery because it will slow down a connection
@@ -514,7 +514,7 @@ public class BtService {
                 try {
                     mmSocket.close();
                 } catch (IOException e2) {
-                    log_debug( "unable to close() " + mSocketType +
+                    log_error( "unable to close() " + mSocketType +
                             " socket during connection failure" );
                     if (D) e2.printStackTrace();
                 }
@@ -538,7 +538,7 @@ public class BtService {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                log_debug( "close() of connect " + mSocketType + " socket failed" );
+                log_error( "close() of connect " + mSocketType + " socket failed" );
                 if (D) e.printStackTrace();
             }
         }
@@ -567,7 +567,7 @@ public class BtService {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                log_debug( "temp sockets not created" );
+                log_error( "temp sockets not created" );
                 if (D) e.printStackTrace();
             }
 
@@ -579,7 +579,7 @@ public class BtService {
          * run
          */
         public void run() {
-            log_debug( "BEGIN ConnectedThread" );
+            log_info( "BEGIN ConnectedThread" );
              // multi buffers
             byte[][] buffers = new byte[ mRecvBufferPlane ][ mRecvBufferByte ];
             byte[] buf = new byte[ mRecvBufferByte ];
@@ -600,7 +600,7 @@ public class BtService {
                     // Read from the InputStream
                     length = mmInStream.read( buf );
                 } catch (IOException e) {
-                    log_debug( "disconnected" );
+                    log_error( "disconnected" );
                     if (D) e.printStackTrace();
                     connectionLost();
                     // Start the service over to restart listening mode
@@ -636,7 +636,7 @@ public class BtService {
                         .sendToTarget();
                 }
             } catch (IOException e) {
-                log_debug( "Exception during write" );
+                log_error( "Exception during write" );
                 if (D) e.printStackTrace();
             }
         }
@@ -648,7 +648,7 @@ public class BtService {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                log_debug( "close() of connect socket failed" );
+                log_error( "close() of connect socket failed" );
                 if (D) e.printStackTrace();
             }
         }
@@ -701,7 +701,7 @@ public class BtService {
         }
         log_d( msg );
     }
-     
+
     /**
      * write log
      * @param String msg
@@ -718,6 +718,30 @@ public class BtService {
         Log.d( 
             BtConstant.TAG, 
             TAG_SUB + BtConstant.LOG_COLON + msg );
+    }
+
+    /**
+     * write log
+     * @param String msg
+     */ 
+    private void log_info( String msg ) {
+        if (isDebugService) {
+            Log.i( 
+                BtConstant.TAG, 
+                TAG_SUB + BtConstant.LOG_COLON + msg );
+        }
+    }
+
+    /**
+     * write log
+     * @param String msg
+     */ 
+    private void log_error( String msg ) {
+        if (D) {
+            Log.e( 
+                BtConstant.TAG, 
+                TAG_SUB + BtConstant.LOG_COLON + msg );
+        }
     }
 
 }

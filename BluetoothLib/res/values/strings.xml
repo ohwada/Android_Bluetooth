@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!-- 2015-03-01 K.OHWADA -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
@@ -10,6 +9,7 @@
     <string name="bt_activity_settings">Settings</string> 
 
 <!--  Main Activity -->
+    <string name="bt_button_connect">Connect</string>
     <string name="bt_button_connect_secure">Connect secure to Bluetooth</string>
     <string name="bt_button_connect_insecure">Connect insecure to Bluetooth</string>
 
@@ -43,10 +43,17 @@
     <string name="bt_toast_not_connected">You are not connected to a device</string>
     <string name="bt_toast_no_action">No Action in debug</string>
 
-<!-- setting -->
+<!-- settings -->
      <string name="bt_pref_category">Bluetooth</string>
-     <string name="bt_pref_show_debug_title">Show Comm Msg with BT</string>
-     <string name="bt_pref_show_debug_summary">Show Communication Message with Bluetooth Device</string>
+
+     <string name="bt_pref_use_addr_title">Save BT addr</string>
+     <string name="bt_pref_use_addr_summary">Save BT address for next connection</string>
+     <string name="bt_pref_use_addr_on">Save</string>
+     <string name="bt_pref_use_addr_off">Not Save</string>
+     <string name="bt_pref_use_addr_default">true</string>
+
+     <string name="bt_pref_show_debug_title">Show comm msg</string>
+     <string name="bt_pref_show_debug_summary">Show communication message with Bluetooth Device</string>
      <string name="bt_pref_show_debug_on">Show</string>
      <string name="bt_pref_show_debug_off">Not Show</string>
      <string name="bt_pref_show_debug_default">false</string>

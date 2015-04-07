@@ -22,7 +22,7 @@ public class MainActivity extends BtActivity {
 
     // UI
     private TerminalView mTerminalView;
-	
+    
     /**
      * === onCreate ===
      */
@@ -36,6 +36,8 @@ public class MainActivity extends BtActivity {
         /* bluetooth */
         bt_initManager();
         bt_initContentView( R.layout.activity_main );
+        bt_initLinearLayoutConnect( R.id.LinearLayout_connect );
+        bt_initTextViewConnect( R.id.TextView_connect );
         bt_initButtonConnectSecure( R.id.Button_connect_secure );
         bt_initScrollViewDebug( R.id.ScrollView_debug );
         bt_initTextViewDebug( R.id.TextView_debug );
@@ -74,6 +76,7 @@ public class MainActivity extends BtActivity {
     public void onResume() {
         super.onResume();
         bt_startService();
+        mTerminalView.refreshPref();
     }
 
     /**
@@ -90,7 +93,7 @@ public class MainActivity extends BtActivity {
      */
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
-        bt_execCreateOptionsMenuSecure( menu );
+        getMenuInflater().inflate( R.menu.main, menu );
         return true;
     }
 
@@ -99,7 +102,19 @@ public class MainActivity extends BtActivity {
      */
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
-         bt_execOptionsItemSelectedSecure( item );
+       int id = item.getItemId();
+        if ( id == R.id.bt_menu_connect_secure ) {
+            bt_execMenuConnectSecure();
+        } else if ( id == R.id.bt_menu_disconnect ) {  
+            bt_execMenuDisconnect();
+        } else if ( id == R.id.bt_menu_clear ) {   
+            bt_execMenuClearAddress();
+        } else if ( id == R.id.menu_clean ) {   
+            mTerminalView.cleanTerminal();
+        } else if ( id == R.id.bt_menu_settings ) {  
+            bt_execMenuSettings(); 
+            return true;
+        } 
         return true;
     }
 
@@ -112,6 +127,14 @@ public class MainActivity extends BtActivity {
     }
 
 // --- comand ---
+    /**
+     * execRecv
+     * @param byte[] bytes
+     */
+    protected void bt_execRead( byte[] bytes ) {
+        mTerminalView.execRead( bytes );
+    }
+
     /**
      * execRecv
      * @param List<String> list

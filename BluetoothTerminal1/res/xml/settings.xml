@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 2015-03-01 K.OHWADA -->
+
+<PreferenceScreen 
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory 
+        android:title="@string/pref_category_terminal" >
+
+        <CheckBoxPreference
+            android:key="display_send"
+            android:title="@string/pref_display_send_title"
+            android:summary="@string/pref_display_send_summary"
+            android:summaryOn="@string/pref_display_send_on"
+            android:summaryOff="@string/pref_display_send_off"
+            android:defaultValue="@string/pref_display_send_default" />
+
+        <CheckBoxPreference
+            android:key="display_hex"
+            android:title="@string/pref_display_hex_title"
+            android:summary="@string/pref_display_hex_summary"
+            android:summaryOn="@string/pref_display_hex_on"
+            android:summaryOff="@string/pref_display_hex_off"
+            android:defaultValue="@string/pref_display_hex_default" />
+
+        <CheckBoxPreference
+            android:key="recv_newline"
+            android:title="@string/pref_recv_newline_title"
+            android:summary="@string/pref_recv_newline_summary"
+            android:summaryOn="@string/pref_recv_newline_on"
+            android:summaryOff="@string/pref_recv_newline_off"
+            android:defaultValue="@string/pref_recv_newline_default" />
+
+        <ListPreference
+            android:key="send_newline"
+            android:title="@string/pref_send_newline_title"
+            android:summary="@string/pref_send_newline_summary"
+            android:entries="@array/pref_send_newline_entries_"
+            android:entryValues="@array/pref_send_newline_entryvalues"
+            android:defaultValue="@string/pref_send_newline_default"
+            android:dialogTitle="@string/pref_send_newline_title" />
+
+    </PreferenceCategory>
+            
+    <PreferenceCategory 
+        android:title="@string/bt_pref_category" >
+
+        <CheckBoxPreference
+            android:key="bt_use_addr"
+            android:title="@string/bt_pref_use_addr_title"
+            android:summary="@string/bt_pref_use_addr_summary"
+            android:summaryOn="@string/bt_pref_use_addr_on"
+            android:summaryOff="@string/bt_pref_use_addr_off"
+            android:defaultValue="@string/bt_pref_use_addr_default" />
+
+        <CheckBoxPreference
+            android:key="bt_show_debug"
+            android:title="@string/bt_pref_show_debug_title"
+            android:summary="@string/bt_pref_show_debug_summary"
+            android:summaryOn="@string/bt_pref_show_debug_on"
+            android:summaryOff="@string/bt_pref_show_debug_off"
+            android:defaultValue="@string/bt_pref_show_debug_default" />
+
+    </PreferenceCategory>
+ 			 	
+</PreferenceScreen>

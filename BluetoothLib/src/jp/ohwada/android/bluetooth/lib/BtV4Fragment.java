@@ -70,7 +70,8 @@ public class BtV4Fragment extends Fragment {
             R.string.bt_toast_not_connected,
             R.string.bt_toast_no_action );
         bt_mManager.setPrefName( 
-            BtConstant.PREF_ADDR, 
+            BtConstant.PREF_DEVICE_NAME, 
+            BtConstant.PREF_DEVICE_ADDR,  
             BtConstant.PREF_USE_ADDR,
             BtConstant.PREF_SHOW_DEBUG );
         bt_mManager.setDebugEmulator( 
@@ -79,7 +80,6 @@ public class BtV4Fragment extends Fragment {
             REQUEST_ADAPTER_ENABLE );
         bt_mManager.setRequestCodeAdapterDiscoverable( 
             REQUEST_ADAPTER_DISCOVERABLE ); 
-        bt_mManager.setTextViewDebugStatus();
         bt_initListener();
     }
 
@@ -188,6 +188,8 @@ public class BtV4Fragment extends Fragment {
      * enableService
      */
     protected boolean bt_enableService() {
+        bt_mManager.setTextViewDebugStatus();
+        bt_mManager.showButtonConnect();
         return bt_mManager.enableService();
     }
 

@@ -40,47 +40,53 @@ public final class R {
         /**  AndroidManifest 
          */
         public static int bt_app_name=0x7f050000;
-        public static int bt_button_connect_insecure=0x7f050004;
         /**   Main Activity 
          */
-        public static int bt_button_connect_secure=0x7f050003;
-        public static int bt_list_button_scan=0x7f050011;
-        public static int bt_list_no_paired=0x7f05000d;
-        public static int bt_list_not_found=0x7f05000e;
+        public static int bt_button_connect=0x7f050003;
+        public static int bt_button_connect_insecure=0x7f050005;
+        public static int bt_button_connect_secure=0x7f050004;
+        public static int bt_list_button_scan=0x7f050012;
+        public static int bt_list_no_paired=0x7f05000e;
+        public static int bt_list_not_found=0x7f05000f;
         /**  DeviceList 
          */
-        public static int bt_list_scanning=0x7f05000b;
-        public static int bt_list_select_device=0x7f05000c;
-        public static int bt_list_title_other_devices=0x7f050010;
-        public static int bt_list_title_paired_devices=0x7f05000f;
-        public static int bt_menu_clear=0x7f050008;
-        public static int bt_menu_connect_insecure=0x7f050006;
+        public static int bt_list_scanning=0x7f05000c;
+        public static int bt_list_select_device=0x7f05000d;
+        public static int bt_list_title_other_devices=0x7f050011;
+        public static int bt_list_title_paired_devices=0x7f050010;
+        public static int bt_menu_clear=0x7f050009;
+        public static int bt_menu_connect_insecure=0x7f050007;
         /**  menu 
          */
-        public static int bt_menu_connect_secure=0x7f050005;
-        public static int bt_menu_disconnect=0x7f050007;
-        public static int bt_menu_discoverable=0x7f050009;
-        public static int bt_menu_settings=0x7f05000a;
-        /**  setting 
+        public static int bt_menu_connect_secure=0x7f050006;
+        public static int bt_menu_disconnect=0x7f050008;
+        public static int bt_menu_discoverable=0x7f05000a;
+        public static int bt_menu_settings=0x7f05000b;
+        /**  settings 
          */
-        public static int bt_pref_category=0x7f05001c;
-        public static int bt_pref_show_debug_default=0x7f050021;
-        public static int bt_pref_show_debug_off=0x7f050020;
-        public static int bt_pref_show_debug_on=0x7f05001f;
-        public static int bt_pref_show_debug_summary=0x7f05001e;
-        public static int bt_pref_show_debug_title=0x7f05001d;
-        public static int bt_title_connected_to=0x7f050013;
+        public static int bt_pref_category=0x7f05001d;
+        public static int bt_pref_show_debug_default=0x7f050027;
+        public static int bt_pref_show_debug_off=0x7f050026;
+        public static int bt_pref_show_debug_on=0x7f050025;
+        public static int bt_pref_show_debug_summary=0x7f050024;
+        public static int bt_pref_show_debug_title=0x7f050023;
+        public static int bt_pref_use_addr_default=0x7f050022;
+        public static int bt_pref_use_addr_off=0x7f050021;
+        public static int bt_pref_use_addr_on=0x7f050020;
+        public static int bt_pref_use_addr_summary=0x7f05001f;
+        public static int bt_pref_use_addr_title=0x7f05001e;
+        public static int bt_title_connected_to=0x7f050014;
         /**   Bluetooth activty 
          */
-        public static int bt_title_connecting=0x7f050012;
-        public static int bt_title_not_connected=0x7f050014;
-        public static int bt_toast_connected=0x7f050019;
-        public static int bt_toast_failed=0x7f050017;
-        public static int bt_toast_lost=0x7f050018;
-        public static int bt_toast_no_action=0x7f05001b;
-        public static int bt_toast_not_available=0x7f050015;
-        public static int bt_toast_not_connected=0x7f05001a;
-        public static int bt_toast_not_enabled=0x7f050016;
+        public static int bt_title_connecting=0x7f050013;
+        public static int bt_title_not_connected=0x7f050015;
+        public static int bt_toast_connected=0x7f05001a;
+        public static int bt_toast_failed=0x7f050018;
+        public static int bt_toast_lost=0x7f050019;
+        public static int bt_toast_no_action=0x7f05001c;
+        public static int bt_toast_not_available=0x7f050016;
+        public static int bt_toast_not_connected=0x7f05001b;
+        public static int bt_toast_not_enabled=0x7f050017;
     }
     public static final class style {
         /** 

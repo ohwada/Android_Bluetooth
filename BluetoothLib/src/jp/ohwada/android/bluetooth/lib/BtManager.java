@@ -20,6 +20,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Bluetooth Service Manager
@@ -83,10 +85,12 @@ public class BtManager {
 
     /* SharedPreferences */
     private boolean isUsePrefAddr = true;
-    private String mPrefAddr = BtConstant.PREF_ADDR;
+    private String mPrefDeviceName = BtConstant.PREF_DEVICE_NAME; 
+    private String mPrefDeviceAddr = BtConstant.PREF_DEVICE_ADDR;
     private String mPrefUseAddr = BtConstant.PREF_USE_ADDR;
     private String mPrefShowDebug = BtConstant.PREF_SHOW_DEBUG;
-    private static final String DEFAULT_ADDR = "";
+    private static final String DEFAULT_DEVICE_NAME = "";
+    private static final String DEFAULT_DEVICE_ADDR = "";
     private static final boolean DEFAULT_USE_ADDR = true;
     private static final boolean DEFAULT_SHOW_DEBUG = false;
 
@@ -126,6 +130,8 @@ public class BtManager {
     private BtStringUtility mStringUtility;
 
     // UI
+    private LinearLayout mLinearLayoutConnect;
+    private TextView mTextViewConnect;
     private Button mButtonConnectSecure;
     private Button mButtonConnectInsecure;
     private BtTextViewDebug mTextViewDebug;
@@ -266,11 +272,11 @@ public class BtManager {
         }
         // connect the BT device at once
         // if there is a device address. 
-        String address = getPrefAddress();
-       if ( isPrefUseAddr() && ( address != null) && !address.equals("") ) {
-            BluetoothDevice device = mBluetoothAdapter.getRemoteDevice( address );
+        String addr = getPrefDeviceAddr();
+       if ( isPrefUseAddr() && ( addr != null) && !addr.equals("") ) {
+            BluetoothDevice device = mBluetoothAdapter.getRemoteDevice( addr );
             if ( mBtService != null ) {
-                log_debug( "connect " + address );
+                log_debug( "connect " + addr );
                 mBtService.connect( device, secure );
             }
         // otherwise
@@ -425,11 +431,14 @@ public class BtManager {
      * execMenuClearAddress
      */  
     public void execMenuClearAddress() {
-        clearPrefAddress();
+        clearPrefDeviceAddress();
+        if ( !isServiceConnected() ) {
+            showButtonConnect();
+        }
     }
 
     /**
-     * execMenuClearAddress
+     * execMenuSettings
      */  
     public void execMenuSettings() {
         startActivitySettings();
@@ -713,9 +722,9 @@ public class BtManager {
         log_debug( "EventConnected " + mDeviceName );	
         // save Device Address
         if ( mBtService != null ) {
-            String address = mBtService.getDeviceAddress();
-            setPrefAddress( address );
-        }	
+            setPrefDeviceName( mDeviceName );
+            setPrefDeviceAddr( mBtService.getDeviceAddress() );
+        }
         String str = String.format( mTitleConnected, mDeviceName );
         setTitleStatus( str );
         hideButtonConnect();
@@ -732,6 +741,20 @@ public class BtManager {
 // --- Message Handler end ---
 
 // --- ButtonConnect ---
+    /**
+     * initLinearLayoutConnect
+     */
+    public void initLinearLayoutConnect( View view, int id ) {
+        mLinearLayoutConnect = (LinearLayout) view.findViewById( id );
+    }
+
+    /**
+     * initTextViewConnect
+     */
+    public void initTextViewtConnect( View view, int id ) {
+        mTextViewConnect = (TextView) view.findViewById( id );
+     }
+
     /**
      * initButtonConnectSecure
      */
@@ -762,6 +785,8 @@ public class BtManager {
      * show ButtonConnect
      */	
     public void showButtonConnect() {
+        setLinearLayoutConnectVisibility( View.VISIBLE );
+        setTextViewConnectVisibility( View.VISIBLE );
         setButtonConnectSecureVisibility( View.VISIBLE );
         setButtonConnectInsecureVisibility( View.VISIBLE );
     }
@@ -770,8 +795,33 @@ public class BtManager {
      * hide ButtonConnect
      */	
     public void hideButtonConnect() {
+        setLinearLayoutConnectVisibility( View.GONE );
+        setTextViewConnectVisibility( View.GONE );
         setButtonConnectSecureVisibility( View.GONE );
         setButtonConnectInsecureVisibility( View.GONE );
+    }
+
+    /**
+     * setLinearLayoutConnectVisibility
+     */	
+    private void setLinearLayoutConnectVisibility( int visibility ) {
+        if ( mLinearLayoutConnect == null ) return;
+        mLinearLayoutConnect.setVisibility( visibility );		 
+    }
+
+    /**
+     * setTextViewConnectVisibility
+     */	
+    private void setTextViewConnectVisibility( int visibility ) {
+        if ( mTextViewConnect == null ) return;
+        mTextViewConnect.setVisibility( visibility );
+        if ( visibility != View.VISIBLE ) return;
+        String addr = getPrefDeviceAddr();
+        if ( "".equals(addr) ) {
+            mTextViewConnect.setVisibility( View.GONE );
+        } else {
+            mTextViewConnect.setText( getPrefDeviceName() );
+        }	 
     }
 
     /**
@@ -801,19 +851,29 @@ public class BtManager {
     /**
      * setPrefName
      */
-    public void setPrefName( String name1, String name2, String name3 ) {
-        mPrefAddr = name1;
-        mPrefUseAddr = name2;
-        mPrefShowDebug = name3;
+    public void setPrefName( String name, String addr, String use, String show ) {
+        mPrefDeviceName = name;
+        mPrefDeviceAddr = addr;
+        mPrefUseAddr = use;
+        mPrefShowDebug = show;
+    }
+
+    /**
+     * get the device name
+     * @return String
+     */
+    private String getPrefDeviceName() {
+        if ( !isUsePrefAddr ) return "";
+        return mPreferences.getString( mPrefDeviceName, DEFAULT_DEVICE_NAME );
     }
 
     /**
      * get the device address
      * @return String
      */
-    private String getPrefAddress() {
+    private String getPrefDeviceAddr() {
         if ( !isUsePrefAddr ) return "";
-        return mPreferences.getString( mPrefAddr, DEFAULT_ADDR );
+        return mPreferences.getString( mPrefDeviceAddr, DEFAULT_DEVICE_ADDR );
     }
 
     /**
@@ -826,19 +886,29 @@ public class BtManager {
     }
 
     /**
+     * save the device name
+     * @param String name
+     */
+    private void setPrefDeviceName( String name ) {
+        if ( !isUsePrefAddr ) return;
+        mPreferences.edit().putString( mPrefDeviceName, name ).commit();
+    }
+
+    /**
      * save the device address
      * @param String addr
      */
-    private void setPrefAddress( String addr ) {
+    private void setPrefDeviceAddr( String addr ) {
         if ( !isUsePrefAddr ) return;
-        mPreferences.edit().putString( mPrefAddr, addr ).commit();
+        mPreferences.edit().putString( mPrefDeviceAddr, addr ).commit();
     }
 
     /**
      * clear the device address
      */
-    public void clearPrefAddress() {
-        setPrefAddress( "" );
+    public void clearPrefDeviceAddress() {
+        setPrefDeviceName( "" );
+        setPrefDeviceAddr( "" );
     }
 
     /**
