@@ -28,6 +28,6 @@ This app which control the LED, button, others on Arduino<br>
 <img src="https://raw.githubusercontent.com/ohwada/Android_Bluetooth/master/docs/bluetooth_chat_2_conversation.png" width="150" />
 <img src="https://raw.githubusercontent.com/ohwada/Android_Bluetooth/master/docs/bluetooth_terminal_normal.png" width="150" />
 <img src="https://raw.githubusercontent.com/ohwada/Android_Bluetooth/master/docs/bluetooth_tester_result.png" width="150" />
-<img src="https://raw.githubusercontent.com/ohwada/Android_Bluetooth/master/docs/bluetooth_arduino_conenected.png" width="150" />
+<img src="https://raw.githubusercontent.com/ohwada/Android_Bluetooth/master/docs/bluetooth_arduino_control.png" width="150" />
 
 ## Blog (in Japanese)
