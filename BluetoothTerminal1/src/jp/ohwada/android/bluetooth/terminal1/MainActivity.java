@@ -73,10 +73,18 @@ public class MainActivity extends BtActivity {
      * === onResume ===
      */
     @Override
-    public void onResume() {
+    public synchronized void onResume() {
         super.onResume();
         bt_startService();
         mTerminalView.refreshPref();
+    }
+
+    /**
+     * === onPause ===
+     */
+    @Override
+    public synchronized void onPause() {
+        super.onPause();
     }
 
     /**
@@ -102,19 +110,12 @@ public class MainActivity extends BtActivity {
      */
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
-       int id = item.getItemId();
-        if ( id == R.id.bt_menu_connect_secure ) {
-            bt_execMenuConnectSecure();
-        } else if ( id == R.id.bt_menu_disconnect ) {  
-            bt_execMenuDisconnect();
-        } else if ( id == R.id.bt_menu_clear ) {   
-            bt_execMenuClearAddress();
-        } else if ( id == R.id.menu_clean ) {   
+        int id = item.getItemId();
+        if ( id == R.id.menu_clean ) {   
             mTerminalView.cleanTerminal();
-        } else if ( id == R.id.bt_menu_settings ) {  
-            bt_execMenuSettings(); 
             return true;
-        } 
+        }
+        bt_execOptionsItemSelectedSecure( item ); 
         return true;
     }
 

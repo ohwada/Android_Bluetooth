@@ -35,8 +35,8 @@
     <string name="bt_title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
     <string name="bt_title_not_connected">not connected</string>
 
-    <string name="bt_toast_not_available">Bluetooth is not available.</string>
-    <string name="bt_toast_not_enabled">Bluetooth was not enabled.</string>
+    <string name="bt_toast_not_available">Bluetooth is not available</string>
+    <string name="bt_toast_not_enabled">Bluetooth was not enabled</string>
     <string name="bt_toast_failed">Unable to connect device</string>
     <string name="bt_toast_lost">Device connection was lost</string>
     <string name="bt_toast_connected">Connected to </string>

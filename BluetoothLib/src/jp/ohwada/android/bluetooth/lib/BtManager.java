@@ -6,6 +6,7 @@ package jp.ohwada.android.bluetooth.lib;
 
 import java.util.List;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -59,6 +61,16 @@ public class BtManager {
     private static final int STATE_CONNECTING = BtService.STATE_CONNECTING;
     private static final int STATE_CONNECTED = BtService.STATE_CONNECTED;
 
+    // return code of enableAdapter
+    public static final int RET_ENABLE_NONE = 0;
+    public static final int RET_ENABLE_START = 1;
+    public static final int RET_ENABLE_SETUP = 2;
+
+    // return code of execActivityResult
+    public static final int RET_RESULT_UNMATCH = 0;
+    public static final int RET_RESULT_MATCH = 1;
+    public static final int RET_RESULT_ENABEL_FAIL = 2;
+
     /* Return Intent extra */
     private static final String EXTRA_DEVICE_ADDRESS = BtDeviceListActivity.EXTRA_DEVICE_ADDRESS;
  
@@ -94,27 +106,43 @@ public class BtManager {
     private static final boolean DEFAULT_USE_ADDR = true;
     private static final boolean DEFAULT_SHOW_DEBUG = false;
 
-    private static final int DISCOVERABLE_DURATION = 300;
-    private static final boolean MODE_SECURE = true;
-    private static final boolean MODE_INSECURE = false;
+    // connect mode
+    private static final boolean MODE_SECURE = BtService.MODE_SECURE;
+    private static final boolean MODE_INSECURE = BtService.MODE_INSECURE;
 
+    // discoverable time
+    private static final int DISCOVERABLE_DURATION = 300;
+
+    // char	
+    private static final String LF = "\n";
+
+    // menu
+    private int mMenuConnectSecure = R.id.bt_menu_connect_secure;
+    private int mMenuConnectInsecure = R.id.bt_menu_connect_insecure;
+    private int mMenuDiscoverable = R.id.bt_menu_discoverable;
+    private int mMenuDisconnect = R.id.bt_menu_disconnect;
+    private int mMenuClear = R.id.bt_menu_clear;
+    private int mMenuSettings = R.id.bt_menu_settings;
+    
     /* Title bar */
-    protected boolean isTitleUse = true;
+    private boolean isTitleUse = true;
     private String mTitleConnecting = "Connecting...";
     private String mTitleConnected = "connected to %1$s";
     private String mTitleNotConnected = "Not connected";
 
     /* Toast */
     private boolean isToastUse = true;
+    private String mToastNotAvailable = "Bluetooth is not available";
+    private String mToastNotEnabled = "Bluetooth was not enabled";
     private String mToastFailed = "Unable to connect device";
     private String mToastLost = "Device connection was lost";
     private String mToastConnected = "Connected to ";
     private String mToastNotConnected = "You are not connected to a device";
     private String mToastNoAciton = "No Action in debug";
 
-    // char	
-    private static final String LF = "\n";
-    
+    // button
+    private boolean isShowButton  = true;
+     
     // callback
     private OnChangedListener mOnListener;
     
@@ -136,6 +164,9 @@ public class BtManager {
     private Button mButtonConnectInsecure;
     private BtTextViewDebug mTextViewDebug;
 
+    // message handler 
+    private Handler mHandler;
+    
     // activity class
     private Class<?> mDeviceListClass;
     private Class<?> mSettingsClass;
@@ -143,16 +174,20 @@ public class BtManager {
     // bluetooth param 
     private String mDeviceName = null;
 
+    // ListString
+    private boolean isUseListString = true;
+
     /**
      * interface OnChangedListener
      */
     public interface OnChangedListener {
-        void onReadBytes( byte[] bytes );
-        void onReadStrings( List<String> list );
+        void onRead( byte[] bytes );
+        void onRead( List<String> list );
         void onWrite( byte[] bytes );
-        void onEvent( int code );
+        void onTitle( String title );
+        void onStartActivity( Intent intent, int request  );
     }
-   
+
     /*
      * === Constractor ===
      * @param Context context
@@ -200,40 +235,55 @@ public class BtManager {
         return mStringUtility;
     }
 
+// --- Manager Control ---
+    /**
+     * setHandler
+     */
+    public void setHandler( Handler handler ) {
+        mHandler = handler;
+    }
+
     /**
      * init BluetoothAdapter
-     * @return boolean
-     */		       
+     * @return boolean : true init adapter, false failed
+     */
     public boolean initAdapter() {
+        // return true if debug
+        if ( isDebugEmulator ) return true;
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // If the adapter is null, then Bluetooth is not supported
-        if ( mBluetoothAdapter != null ) return true;
-        // return true if debug
-        if ( isDebugEmulator ) return true;
-        return false;
+        if ( mBluetoothAdapter == null ) {
+            toast_long( mToastNotAvailable );
+            return false;
+        }
+        return true;
     }
 
-// --- Manager Control ---
     /**
-     * enabled BtService when onStart
-     * @return  boolean
-    */
-    public boolean enableService() {
+     * enabled Service when onStart
+     * @return int : 
+     *      START : adapte is not Enabled and start AdapterEnable, 
+     *      SETUP : setupService
+     *      NONE : others
+     */
+    public int enableService() {
         log_debug( "enabledService()" );	
         // no action if debug
-        if ( isDebugEmulator ) return true;
+        if ( isDebugEmulator ) return RET_ENABLE_SETUP;
         if ( !mBluetoothAdapter.isEnabled() ) {
             // startActivity AdapterEnable
             // if BluetoothAdapte is not Enabled
             startActivityAdapterEnable();
+            return RET_ENABLE_START;
+        } else {
+            // Otherwise, start Bluetooth Service
+            if ( mBtService == null ) {
+                setupService();
+                return RET_ENABLE_SETUP;
+            }
         }
-        // Otherwise, start Bluetooth Service
-        if ( mBtService == null ) {
-            setupService();
-            return true;
-        }
-        return false;
+        return RET_ENABLE_NONE;
     }
 
     /**
@@ -256,41 +306,40 @@ public class BtManager {
         }
         if ( mBtService != null ) {
             log_debug( "set Handler" );
-            mBtService.setHandler( serviceHandler );
+            mBtService.setHandler( mHandler );
         }		
     }
 
     /**
      * connect Bluetooth Device when touch button
+     * @return boolean : 
+     *      true : connect with saved address
+     *      false : start Activity Bluetooth DeviceList
      */
     public boolean connectService( boolean secure ) {
         log_debug( "connectService()" );
         // no action if debug
         if ( isDebugEmulator ) {
             toast_short( mToastNoAciton ); 
-            return false;
+            return true;
         }
         // connect the BT device at once
         // if there is a device address. 
         String addr = getPrefDeviceAddr();
-       if ( isPrefUseAddr() && ( addr != null) && !addr.equals("") ) {
+       if ( isPrefUseAddr() && ( addr != null) && !addr.equals("") && ( mBtService != null )) {
+            log_debug( "connect " + addr );
             BluetoothDevice device = mBluetoothAdapter.getRemoteDevice( addr );
-            if ( mBtService != null ) {
-                log_debug( "connect " + addr );
-                mBtService.connect( device, secure );
-            }
-        // otherwise
-        // sttart Activity Bluetooth DeviceList
-        } else {
-            startActivityDeviceList( secure );
+            mBtService.connect( device, secure );
             return true;
         }
+        // otherwise
+        // start Activity Bluetooth DeviceList
+        startActivityDeviceList( secure );
         return false;
     }
 			
     /**
      * start Bluetooth Service when onResume
-     * @return int
      */
     public void startService() {
         log_debug( "startService()" );
@@ -300,15 +349,14 @@ public class BtManager {
                 hideButtonConnect();
                 break;
             default:
-                setTitleStatus( mTitleNotConnected );	   	
+                notifyTitle( mTitleNotConnected );
                 break;
         }
-        notifyEvent( state );
     }
 
     /**
      * execStartService
-     * @return int
+     * @return int state
      */
     private int execStartService() {
         // no action if debug
@@ -343,24 +391,33 @@ public class BtManager {
         }
         showButtonConnect();
     }
+
+    /**
+     * clear Service
+     */
+    public void clearService() {
+        mBtService = null;
+    }
     
     /**
      * check the status of BT service
-     * @return boolean
+     * @return boolean : true connected, false not connected
      */
     public boolean isServiceConnected() {
-        log_debug( "isServiceConnected()" );
         // true if debug
         if ( isDebugEmulator ) return true;
+        // if service is null
+        if ( mBtService == null ) {
+            log_debug( "isServiceConnected() Service null" );
+            return false;
+        }
         // if connected
-        if ( mBtService != null ) {
-            if ( mBtService.getState() == STATE_CONNECTED ) {
-                log_debug( "true" );
-                return true;
-            }
+        if ( mBtService.getState() == STATE_CONNECTED ) {
+            log_debug( "isServiceConnected() true" );
+            return true;
         }
         // otherwise
-        log_debug( "false" );
+        log_debug( "isServiceConnected() false" );
         return false;
     }
 // --- Manager Control end ---
@@ -369,7 +426,7 @@ public class BtManager {
     /**
      * Sends a message.
      * @param byte[]  A string of text to send.
-     * @return boolean
+     * @return boolean : true send, false error
      */
     public boolean write( byte[] bytes ) {
         log_debug( "write()" ); 
@@ -400,17 +457,89 @@ public class BtManager {
 
 // --- menu ---
     /**
-     * execMenuConnect
-     */  
+     * setMenuId
+     */
+    public void setMenuId(
+        int id_secure, int id_insecure, int id_discoverable,
+        int id_disconnect, int id_clear, int id_settings ) {
+        mMenuConnectSecure = id_secure;
+        mMenuConnectInsecure = id_insecure;
+        mMenuDiscoverable = id_discoverable;
+        mMenuDisconnect = id_disconnect;
+        mMenuClear = id_clear;
+        mMenuSettings = id_settings;
+    } 
+
+    /**
+     * OptionsItemSelected full
+     * @param MenuItem item
+     * @return boolean : true : match;  false : unmatch
+     */
+    public boolean execOptionsItemSelectedFull( MenuItem item ) { 
+        int id = item.getItemId(); 
+        if ( id == mMenuConnectInsecure ) {
+            execMenuConnectInsecure();
+            return true;
+        } else if ( id == mMenuDiscoverable ) {  
+            execMenuDiscoverable();
+            return true;
+        }
+        return execOptionsItemSelectedSecure( item ); 
+    }
+
+    /**
+     * OptionsItemSelected secure
+     * @param MenuItem item
+     * @return boolean : true : match;  false : unmatch
+     */
+    public boolean execOptionsItemSelectedSecure( MenuItem item ) { 
+        int id = item.getItemId();
+        if ( id == mMenuConnectSecure ) {
+            execMenuConnectSecure();
+            return true;
+        } else if ( id == mMenuDisconnect ) {  
+            execMenuDisconnect();
+            return true;
+        } else if ( id == mMenuClear ) {   
+            execMenuClearAddress();
+            return true;
+        } else if ( id == mMenuSettings ) {  
+            execMenuSettings(); 
+            return true;
+        } 
+        return false;
+    }
+
+    /**
+     * execMenu ConnectSecure
+     */
     public void execMenuConnectSecure() {
         connectService( MODE_SECURE );
     }
 
     /**
-     * execMenuConnect
-     */  
+     * execMenu ConnectInsecure
+     */
     public void execMenuConnectInsecure() {
         connectService( MODE_INSECURE );
+    }
+
+    /**
+     * execMenu Discoverable
+     */
+    public void execMenuDiscoverable() {
+        if ( mBluetoothAdapter.getScanMode() ==
+            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE ) {
+            return;
+        }
+        startActivityAdapterDiscoverable();
+    }
+
+    /**
+     * execMenu Settings
+     */
+    public void execMenuSettings() {
+        startActivitySettings();
     }
 
     /**
@@ -421,37 +550,12 @@ public class BtManager {
     }
 
     /**
-     * execMenuDiscoverable
-     */  
-    public void execMenuDiscoverable() {
-        ensureDiscoverable();
-    }
-
-    /**
      * execMenuClearAddress
      */  
     public void execMenuClearAddress() {
         clearPrefDeviceAddress();
         if ( !isServiceConnected() ) {
             showButtonConnect();
-        }
-    }
-
-    /**
-     * execMenuSettings
-     */  
-    public void execMenuSettings() {
-        startActivitySettings();
-    }
-
-    /**
-     * ensureDiscoverable
-     */ 
-    private void ensureDiscoverable() {
-        log_debug( "ensure discoverable" );
-        if ( mBluetoothAdapter.getScanMode() !=
-            BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE ) {
-            startActivityAdapterDiscoverable();
         }
     }
 
@@ -475,6 +579,8 @@ public class BtManager {
     /**
      * initDeviceListClass
      * @patam Class<?> cls
+     * @patam int secure
+     * @patam int insecure
      */
     public void initDeviceListClass( Class<?> cls, int secure, int insecure ) {
         mDeviceListClass = cls;
@@ -485,6 +591,7 @@ public class BtManager {
     /**
      * initSettingsClass
      * @patam Class<?> cls
+     * @patam int code
      */
     public void initSettingsClass( Class<?> cls, int code ) {
         mSettingsClass = cls;
@@ -494,20 +601,20 @@ public class BtManager {
     /**
      * startActivity AdapterEnable
      */
-    public void startActivityAdapterEnable() {
+    private void startActivityAdapterEnable() {
         Intent intent = new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
-        startActivityForResult( intent, mRequestEnable );
+        notifyStartActivity( intent, mRequestEnable );
     }
 
     /**
      * startActivity AdapterDiscoverable 
      */
-    public void startActivityAdapterDiscoverable() {
+    private void startActivityAdapterDiscoverable() {
         Intent intent = new Intent( BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE );
         intent.putExtra( 
             BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION,
             DISCOVERABLE_DURATION );
-        startActivityForResult( intent, mRequestDiscoverable );
+        notifyStartActivity( intent, mRequestDiscoverable );
     }
 
     /**
@@ -520,33 +627,70 @@ public class BtManager {
         if ( mode ) {
             request = mRequestDeviceListSecure;
         }       
-        startActivityForResult( intent, request );
+        notifyStartActivity( intent, request );
     }
 
     /**
      * startActivity settings
      */
-    public void startActivitySettings() {
+    private void startActivitySettings() {
         if ( mSettingsClass == null ) return;
         Intent intent = new Intent( mContext, mSettingsClass );
-        startActivityForResult( intent, mRequestSettings );
-    }
-
-    /**
-     * startActivityForResult (overwrite)
-     */
-    protected void startActivityForResult( Intent intent, int request ) {
-        // dummy
+        notifyStartActivity( intent, mRequestSettings );
     }
 
 // --- onActivityResult ---
     /**
-     * callback from Bluetooth Adapter Enable activity when OK
+     * callback from Activity
+     * @param int request
+     * @param int result
      * @param Intent data
-    */
-    public void execActivityResultAdapterEnable( Intent data ) { 
-        log_debug( "execActivityResultAdapterEnable()" );    	
-        // When the request to enable Bluetooth returns
+     *      MATCH : request match
+     *      UNMATCH : request unmatch
+     *      FAIL : fail to enable Bluetooth
+     */
+    public int execActivityResult( int request, int result, Intent data ) {
+        log_debug( "execActivityResult " + result );
+        if ( request == mRequestEnable ) {
+            // When the request to enable Bluetooth returns
+            if ( result == Activity.RESULT_OK ) {
+                // Bluetooth is now enabled, so set up a chat session
+                execActivityResultAdapterEnable( data );
+            } else {
+                // User did not enable Bluetooth or an error occurred
+                log_debug( "BT not enabled" );
+                toast_short( mToastNotEnabled );
+                return RET_RESULT_ENABEL_FAIL;
+            }
+            return RET_RESULT_MATCH;
+        } else if ( request == mRequestDiscoverable ) {
+            return RET_RESULT_MATCH;
+        } else if ( request == mRequestDeviceListSecure) {
+            // When DeviceListActivity returns with a device to connect
+            if ( result == Activity.RESULT_OK ) {
+                execActivityResultDeviceListSecure( data );
+            }
+            return RET_RESULT_MATCH;
+        } else if ( request == mRequestDeviceListInsecure ) {
+            // When DeviceListActivity returns with a device to connect
+            if ( result == Activity.RESULT_OK ) {
+                execActivityResultDeviceListInsecure( data );
+            }
+            return RET_RESULT_MATCH;
+        } else if ( request == mRequestSettings ) {
+            if ( result == Activity.RESULT_OK ) {
+                execActivityResultSettings( data );
+            }
+            return RET_RESULT_MATCH;
+        }
+        return RET_RESULT_UNMATCH;
+    }
+
+    /**
+     * callback from AdapterEnable
+     * @param Intent data
+     */
+    public void execActivityResultAdapterEnable( Intent data ) {
         setupService();
     }
 
@@ -600,20 +744,10 @@ public class BtManager {
 
 // --- Message Handler ---
     /**
-     * The Handler that gets information back from the BtService
-     */
-    private Handler serviceHandler = new Handler() {
-        @Override
-        public void handleMessage( Message msg ) {
-            execServiceHandler( msg );
-        }
-    };
-
-    /**
      * Message Handler ( handle message )
      * @param Message msg
      */
-    private void execServiceHandler( Message msg ) {
+    public void execServiceHandler( Message msg ) {
         switch ( msg.what ) {
             case WHAT_READ:
                 execHandlerRead( msg );
@@ -621,44 +755,31 @@ public class BtManager {
             case WHAT_WRITE:
                 execHandlerWrite( msg );
                 break;
-            case WHAT_STATE_CHANGE:
-                execHandlerChange( msg );
-                break;
             case WHAT_DEVICE_NAME:
                 execHandlerDevice( msg );
                 break;
             case WHAT_FAILED:
-                toast_short( mToastFailed );
-                notifyEvent( WHAT_FAILED );
+                execHandlerFailed( msg );
                 break;
             case WHAT_LOST:
-                toast_short( mToastLost );           
-                showButtonConnect();
-                notifyEvent( WHAT_LOST );
+                execHandlerLost( msg );
                 break;
-        }
-    }
-
-    /**
-     * Message Handler ( state change )
-     * @param Message msg
-     * @return byte[] 
-     */
-    private void execHandlerChange( Message msg ){
-        int state = msg.arg1;
-        switch ( state ) {
-            case STATE_CONNECTED:
-                execHandlerConnected( msg );
-                break; 
-            case STATE_CONNECTING:
-                setTitleStatus( mTitleConnecting );
-                notifyEvent( STATE_CONNECTING );
-                break;
-            case STATE_LISTEN:
-            case STATE_NONE:
-            default:        	
-                setTitleStatus( mTitleNotConnected );
-                notifyEvent( STATE_NONE );
+            case WHAT_STATE_CHANGE:
+                int state = msg.arg1;
+                log_info( "MESSAGE_STATE_CHANGE: " + state );
+                switch ( state ) {
+                    case STATE_CONNECTED:
+                        execHandlerConnected( msg );
+                        break; 
+                    case STATE_CONNECTING:
+                        execHandlerConnecting( msg );
+                        break;
+                    case STATE_LISTEN:
+                    case STATE_NONE:
+                    default:
+                        execHandlerNone( msg );        	
+                        break;
+                }
                 break;
         }
     }
@@ -666,7 +787,6 @@ public class BtManager {
     /**
      * Message Handler ( read )
      * @param Message msg
-     * @return byte[] 
      */
     public void execHandlerRead( Message msg ) {
         // create valid data bytes from double buffer
@@ -682,18 +802,18 @@ public class BtManager {
         if ( isDebugRead ) {
             log_bytes( "r", bytes );
         }
-        notifyReadBytes( bytes );
+        notifyRead( bytes );
+        if ( !isUseListString ) return;
         List<String> list = mStringUtility.getListString( bytes );
-        if ( list.size() > 0 ) {
-            notifyReadStrings( list );
-        }
+        if ( list.size() == 0 ) return;
+        notifyRead( list );
     }
 
     /**
      * Message Handler ( write )
      * @param Message msg
      */
-    private void execHandlerWrite( Message msg ) {
+    public void execHandlerWrite( Message msg ) {
         byte[] bytes = (byte[]) msg.obj; 
         if ( isDebugWriteAfter ) {
             log_bytes( "wa", bytes );
@@ -702,33 +822,75 @@ public class BtManager {
     }
 
     /**
-     * Message Handler ( device name )
-     * @param Message msg
-     */
-    private void execHandlerDevice( Message msg ) {
-        // get the connected device's name
-        mDeviceName = msg.getData().getString( BUNDLE_DEVICE_NAME );
-        log_debug( "EventDevice " + mDeviceName );
-        toast_short( mToastConnected + mDeviceName );
-        hideButtonConnect();
-        notifyEvent( WHAT_DEVICE_NAME );
-    }
-
-    /**
      * Message Handler ( connected )
      * @param Message msg
      */	
-    private void execHandlerConnected( Message msg ) {
-        log_debug( "EventConnected " + mDeviceName );	
+    public void execHandlerConnected( Message msg ) {
+        log_debug( "Event Connected: " + mDeviceName );	
         // save Device Address
         if ( mBtService != null ) {
             setPrefDeviceName( mDeviceName );
             setPrefDeviceAddr( mBtService.getDeviceAddress() );
         }
-        String str = String.format( mTitleConnected, mDeviceName );
-        setTitleStatus( str );
         hideButtonConnect();
-        notifyEvent( STATE_CONNECTED );
+        String str = String.format( mTitleConnected, mDeviceName );
+        notifyTitle( str );
+    }
+
+    /**
+     * Message Handler ( Connecting )
+     * @param Message msg
+     */
+    public void execHandlerConnecting( Message msg ) {
+        notifyTitle( mTitleConnecting );
+    }
+
+    /**
+     * Message Handler ( None )
+     * @param Message msg
+     */
+    public void execHandlerNone( Message msg ) {
+        notifyTitle( mTitleNotConnected );
+    }
+
+    /**
+     * Message Handler ( device name )
+     * @param Message msg
+     */
+    public void execHandlerDevice( Message msg ) {
+        // get the connected device's name
+        mDeviceName = msg.getData().getString( BUNDLE_DEVICE_NAME );
+        log_debug( "Event Device: " + mDeviceName );
+        toast_short( mToastConnected + mDeviceName );
+        hideButtonConnect();
+    }
+
+    /**
+     * Message Handler ( Failed )
+     * @param Message msg
+     */
+    public void execHandlerFailed( Message msg ) {
+        log_debug( "Event Faild" );
+        toast_short( mToastFailed );
+        showButtonConnect();
+        // restart service
+        if ( mBtService != null ) {
+            mBtService.start();
+        }
+    }
+
+    /**
+     * Message Handler ( Lost )
+     * @param Message msg
+     */
+    public void execHandlerLost( Message msg ) {
+        log_debug( "Event Lost" );
+        toast_short( mToastLost );           
+        showButtonConnect();
+        // restart service
+        if ( mBtService != null ) {
+            mBtService.start();
+        }
     }
 
     /**
@@ -738,9 +900,78 @@ public class BtManager {
     public String getDeviceName() {
         return mDeviceName;	
     }
+
+    /**
+     * setUseListString
+     * @param boolean flag
+     */
+    public void setUseListString( boolean flag ) {
+        isUseListString = flag;
+    }
 // --- Message Handler end ---
 
+// --- notify ---  
+    /**
+     * notifyRead
+     * @param byte[] bytes
+     */	
+    private void notifyRead( byte[] bytes ) {
+        if ( mOnListener != null ) {
+            mOnListener.onRead( bytes );
+        }
+    }
+
+    /**
+     * notifyRead
+     * @param List<String> list
+     * @param byte[] bytes
+     */	
+    private void notifyRead( List<String> list ) {
+        if ( mOnListener != null ) {
+            mOnListener.onRead( list );
+        }
+    }
+
+    /**
+     * notifyWrite
+     * @param byte[] bytes
+     */	
+    private void notifyWrite( byte[] bytes ) {
+        if ( mOnListener != null ) {
+            mOnListener.onWrite( bytes );
+        }
+    }
+
+     /**
+     * notifyTitle
+     * @param String title
+     */	
+    private void notifyTitle( String title ) {
+        if ( !isTitleUse ) return;
+        if ( mOnListener != null ) {
+            mOnListener.onTitle( title );
+        }
+    }
+
+     /**
+     * notifyStartActivity
+     * @param Intent intent
+     * @param int request
+     */	
+    private void notifyStartActivity( Intent intent, int request ) {
+        if ( mOnListener != null ) {
+            mOnListener.onStartActivity( intent, request );
+        }
+    }
+
 // --- ButtonConnect ---
+    /**
+     * setShowButton
+     */
+    public void setShowButton( boolean flag ) {
+        isShowButton = flag;
+    }
+
     /**
      * initLinearLayoutConnect
      */
@@ -785,6 +1016,7 @@ public class BtManager {
      * show ButtonConnect
      */	
     public void showButtonConnect() {
+        if ( !isShowButton ) return;
         setLinearLayoutConnectVisibility( View.VISIBLE );
         setTextViewConnectVisibility( View.VISIBLE );
         setButtonConnectSecureVisibility( View.VISIBLE );
@@ -920,48 +1152,6 @@ public class BtManager {
             mPrefShowDebug, DEFAULT_SHOW_DEBUG );
     }
 
-// --- notify ---  
-    /**
-     * notifyRead
-     * @param byte[] bytes
-     */	
-    private void notifyReadBytes( byte[] bytes ) {
-        if ( mOnListener != null ) {
-            mOnListener.onReadBytes( bytes );
-        }
-    }
-
-    /**
-     * notifyRead
-     * @param List<String> list
-     * @param byte[] bytes
-     */	
-    private void notifyReadStrings( List<String> list ) {
-        if ( mOnListener != null ) {
-            mOnListener.onReadStrings( list );
-        }
-    }
-
-    /**
-     * notifyWrite
-     * @param byte[] bytes
-     */	
-    private void notifyWrite( byte[] bytes ) {
-        if ( mOnListener != null ) {
-            mOnListener.onWrite( bytes );
-        }
-    }
-
-    /**
-     * notifyEvent
-     * @param byte[] bytes
-     */	
-    private void notifyEvent( int code ) {
-        if ( mOnListener != null ) {
-            mOnListener.onEvent( code );
-        }
-    }
-
 // --- title --- 
     /*
      * setTitleUse
@@ -969,14 +1159,6 @@ public class BtManager {
     */
     public void setTitleUse( boolean flag ) {
         isTitleUse = flag;
-    }
-
-    /*
-     * setTitleStatus (overwrite)
-     * @param CharSequence subTitle
-    */
-    protected void setTitleStatus( CharSequence subTitle ) {
-        // dummy
     }
 
     /*
@@ -1003,7 +1185,11 @@ public class BtManager {
     /*
      * setToastMsg
      */
-    public void setToastMsg( int id_failed, int id_lost, int id_connected, int id_not_connected, int id_no_action ) {
+    public void setToastMsg( 
+        int id_not_available, int id_not_enabled, int id_failed, int id_lost, 
+        int id_connected, int id_not_connected, int id_no_action ) {
+        mToastNotAvailable = getString( id_not_available );
+        mToastNotEnabled = getString( id_not_enabled );
         mToastFailed = getString( id_failed );
         mToastLost = getString( id_lost );
         mToastConnected = getString( id_connected );
@@ -1018,6 +1204,15 @@ public class BtManager {
     private void toast_short( String msg ) {
         if ( !isToastUse ) return;
     	BtToastMaster.showShort( mContext, msg );
+    }
+
+    /**
+     * show toast
+     * @param String msg
+     */				
+    private void toast_long( String msg ) {
+        if ( !isToastUse ) return;
+    	BtToastMaster.showLong( mContext, msg );
     }
 
     /**
@@ -1239,7 +1434,7 @@ public class BtManager {
      * write log
      * @param String msg
      */ 
-    protected void log_debug( String msg ) {
+    private void log_debug( String msg ) {
         if (isDebugManager) log_d( msg ); 
     }
 
@@ -1251,7 +1446,19 @@ public class BtManager {
         Log.d( 
             BtConstant.TAG, 
             TAG_SUB + BtConstant.LOG_COLON + msg );
-    }	
+    }
+
+    /**
+     * write log
+     * @param String msg
+     */ 
+    private void log_info( String msg ) {
+        if (isDebugManager) {
+            Log.i( 
+                BtConstant.TAG, 
+                TAG_SUB + BtConstant.LOG_COLON + msg );
+        }
+    }
 // --- Debug end ---
 
 }

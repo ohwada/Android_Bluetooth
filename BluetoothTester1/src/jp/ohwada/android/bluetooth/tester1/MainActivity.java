@@ -155,12 +155,19 @@ public class MainActivity extends BtActivity {
      * === onResume ===
      */
     @Override
-    public void onResume() {
+    public synchronized void onResume() {
         super.onResume();
         bt_startService();
-        if ( mMode == MODE_ECHO ) {
-            bt_hideButtonConnect();
-        }	
+    }
+
+    /** 
+     * onPause
+     */
+    @Override
+    public synchronized void onPause() {
+        super.onPause();
+        stopTimer();
+        bt_stopService();
     }
 
     /**
@@ -220,6 +227,7 @@ public class MainActivity extends BtActivity {
         mMode = MODE_ECHO;
         mButtonStart.setVisibility( View.INVISIBLE );
         mButtonStop.setVisibility( View.INVISIBLE );
+        bt_setShowButton( false );
         bt_hideButtonConnect();
     }
 
@@ -230,6 +238,7 @@ public class MainActivity extends BtActivity {
         mMode = MODE_TESTER;
         mButtonStart.setVisibility( View.VISIBLE );
         mButtonStop.setVisibility( View.VISIBLE );
+        bt_setShowButton( true );
         if ( !bt_isServiceConnected() ) {
             bt_showButtonConnect();
         }
@@ -243,8 +252,10 @@ public class MainActivity extends BtActivity {
         int id = rb.getId();
         if ( id == R.id.RadioButton_profile_chat ) {
             bt_setServiceProfileChat();
+            bt_startService();
         } else if ( id == R.id.RadioButton_profile_serial ) {
             bt_setServiceProfileSerial();
+            bt_startService();
         }
     }
 
@@ -320,16 +331,6 @@ public class MainActivity extends BtActivity {
             if ( num > MAX_COUNT ) {
                 execStop();
             }
-        }
-    }
-
-    /**
-     * execEvent
-     * @param int code
-     */
-    protected void bt_execEvent( int code ) {
-        if ( mMode == MODE_ECHO ) {
-            bt_hideButtonConnect();
         }
     }
 

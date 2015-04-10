@@ -78,9 +78,17 @@ public class MainActivity extends BtActivity {
      * === onResume ===
      */
     @Override
-    public void onResume() {
+    public synchronized void onResume() {
         super.onResume();
         bt_startService();
+    }
+
+    /**
+     * === onPause ===
+     */
+    @Override
+    public synchronized void onPause() {
+        super.onPause();
     }
 
     /**
@@ -106,13 +114,13 @@ public class MainActivity extends BtActivity {
      */
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
-        switch ( item.getItemId() ) {
-            case R.id.menu_graph:
-                mArduinoView.showGraph();
-                return true;
-            case R.id.menu_log:
-                mArduinoView.showLog();
-                return true;
+        int id = item.getItemId();
+        if ( id == R.id.menu_graph ) { 
+            mArduinoView.showGraph();
+            return true;
+        } else if ( id == R.id.menu_log ) { 
+            mArduinoView.showLog();
+            return true;
         }
         bt_execOptionsItemSelectedSecure( item );
         return true;

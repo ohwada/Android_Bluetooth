@@ -74,9 +74,9 @@ public class BtService {
     /* Key names received from the BtService Handler */
     public static final String BUNDLE_DEVICE_NAME = "device_name";
 
-    // mode
-    private static final boolean MODE_SECURE = true;
-    private static final boolean MODE_INSECURE = false;
+    // connect mode
+    public static final boolean MODE_SECURE = true;
+    public static final boolean MODE_INSECURE = false;
 
     // handler
     private static final int ARG1_NONE = -1;
@@ -252,7 +252,7 @@ public class BtService {
      */
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device, final String socketType) {
-        log_debug( "connected, Socket Type:" + socketType );
+        log_debug( "connected, Socket Type: " + socketType );
 
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
@@ -346,8 +346,9 @@ public class BtService {
         mHandler.sendMessage( 
             mHandler.obtainMessage( WHAT_FAILED ) );
 
+        // *** move to manager
         // Start the service over to restart listening mode
-        BtService.this.start();
+//        BtService.this.start();
     }
 
     /**
@@ -358,8 +359,9 @@ public class BtService {
         mHandler.sendMessage(
             mHandler.obtainMessage( WHAT_LOST ) );
 
+        // *** move to manager
         // Start the service over to restart listening mode
-        BtService.this.start();
+//        BtService.this.start();
     }
 
     /**
@@ -389,7 +391,7 @@ public class BtService {
                         NAME_INSECURE, mUuidInsecure );
                 }
             } catch (IOException e) {
-                log_error( "Socket Type: " + mSocketType + "listen() failed" );
+                log_error( "Socket Type: " + mSocketType + " listen() failed" );
                 if (D) e.printStackTrace();
             }
             mmServerSocket = tmp;
@@ -399,7 +401,7 @@ public class BtService {
          * run
          */
         public void run() {
-            log_debug( "Socket Type: " + mSocketType + "BEGIN AcceptThread" + this );
+            log_debug( "Socket Type: " + mSocketType + " BEGIN AcceptThread " + this );
             setName("AcceptThread" + mSocketType);
 
             BluetoothSocket socket = null;
@@ -411,7 +413,7 @@ public class BtService {
                     // successful connection or an exception
                     socket = mmServerSocket.accept();
                 } catch (IOException e) {
-                    log_error( "Socket Type: " + mSocketType + "accept() failed" );
+                    log_error( "Socket Type: " + mSocketType + " accept() failed" );
                     if (D) e.printStackTrace();
                     break;
                 }
@@ -448,11 +450,11 @@ public class BtService {
          * cancel
          */
         public void cancel() {
-            log_debug( "Socket Type" + mSocketType + "cancel " + this );
+            log_debug( "Socket Type: " + mSocketType + " cancel " + this );
             try {
                 mmServerSocket.close();
             } catch (IOException e) {
-                log_error( "Socket Type" + mSocketType + "close() of server failed" );
+                log_error( "Socket Type: " + mSocketType + " close() of server failed" );
                 if (D) e.printStackTrace();
             }
         }
@@ -488,7 +490,7 @@ public class BtService {
                             mUuidInsecure);
                 }
             } catch (IOException e) {
-                log_error( "Socket Type: " + mSocketType + "create() failed" );
+                log_error( "Socket Type: " + mSocketType + " create() failed" );
                 if (D) e.printStackTrace();
             }
             mmSocket = tmp;
@@ -498,7 +500,7 @@ public class BtService {
          * run
          */
         public void run() {
-            log_info( "BEGIN ConnectThread SocketType:" + mSocketType );
+            log_info( "BEGIN ConnectThread SocketType: " + mSocketType );
             setName("ConnectThread" + mSocketType);
 
             // Always cancel discovery because it will slow down a connection
@@ -603,8 +605,9 @@ public class BtService {
                     log_error( "disconnected" );
                     if (D) e.printStackTrace();
                     connectionLost();
+                    // *** move to manager
                     // Start the service over to restart listening mode
-                    BtService.this.start();
+//                    BtService.this.start();
                     break;
                 }
                 if ( length == 0 ) continue;

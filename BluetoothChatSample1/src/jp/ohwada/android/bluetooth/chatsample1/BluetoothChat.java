@@ -64,6 +64,7 @@ public class BluetoothChat extends BtActivity {
         bt_setServiceProfileChat();
         bt_setServiceHandlerWrite( true );
         bt_setUsePrefAddress( false );
+        bt_setUseListString( false );
 
         // Get local Bluetooth adapter 
        boolean ret = bt_initAdapter();
@@ -190,48 +191,32 @@ public class BluetoothChat extends BtActivity {
     };
 
     /** 
-     * execWrite (override)
-     * @param byte[] bytes
-     */
-    protected void bt_execWrite( byte[] bytes ) {
-        String writeMessage = new String( bytes );
-        mConversationArrayAdapter.add( "Me:  " + writeMessage );
-    }
-
-    /**
-     * execRead (override)
-     * @param byte[] bytes
-     */
-    protected void bt_execRead( byte[] bytes ) {
-        String readMessage = new String( bytes );
-        mConversationArrayAdapter.add( bt_getDeviceName() + ":  " + readMessage );
-    }
-
-    /** 
      * onActivityResult
      */
     public void onActivityResult( int requestCode, int resultCode, Intent data ) {
         log_d( "onActivityResult " + resultCode );
         switch (requestCode) {
-        case REQUEST_DEVICE_LIST_SECURE:            
+        case BT_REQUEST_DEVICE_LIST_SECURE:            
             // When DeviceListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
                 bt_execActivityResultDeviceListSecure( data );
             }
             break;
-        case REQUEST_DEVICE_LIST_INSECURE:
+        case BT_REQUEST_DEVICE_LIST_INSECURE:
             // When DeviceListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
                 bt_execActivityResultDeviceListInsecure( data );
             }
             break;
-        case REQUEST_ADAPTER_ENABLE:
+        case BT_REQUEST_ADAPTER_ENABLE:
             // When the request to enable Bluetooth returns
             if (resultCode == Activity.RESULT_OK) {
                 // Bluetooth is now enabled, so set up a chat session
                 bt_execActivityResultAdapterEnable( data );
+                setupChat();
             } else {
                 // User did not enable Bluetooth or an error occurred
+                log_d( "BT not enabled" );
                 bt_toast_short( R.string.bt_not_enabled_leaving );
                 finish();
             }
@@ -269,6 +254,24 @@ public class BluetoothChat extends BtActivity {
             return true;
         }
         return false;
+    }
+
+    /** 
+     * execWrite (override)
+     * @param byte[] bytes
+     */
+    protected void bt_execWrite( byte[] bytes ) {
+        String writeMessage = new String( bytes );
+        mConversationArrayAdapter.add( "Me:  " + writeMessage );
+    }
+
+    /**
+     * execRead (override)
+     * @param byte[] bytes
+     */
+    protected void bt_execRead( byte[] bytes ) {
+        String readMessage = new String( bytes );
+        mConversationArrayAdapter.add( bt_getDeviceName() + ":  " + readMessage );
     }
 
     /** 

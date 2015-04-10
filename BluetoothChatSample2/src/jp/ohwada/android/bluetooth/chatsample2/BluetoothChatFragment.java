@@ -2,22 +2,6 @@
  * 2015-03-01 K.OHWADA
  */ 
 
-/*
- * Copyright (C) 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package jp.ohwada.android.bluetooth.chatsample2;
 
 import jp.ohwada.android.bluetooth.lib.BtV4Fragment;
@@ -80,6 +64,7 @@ public class BluetoothChatFragment extends BtV4Fragment {
         bt_setServiceProfileChat();
         bt_setServiceHandlerWrite( true );
         bt_setUsePrefAddress( false );
+        bt_setUseListString( false );
 
         // Get local Bluetooth adapter
         boolean ret = bt_initAdapter();
@@ -228,24 +213,24 @@ public class BluetoothChatFragment extends BtV4Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         log_d( "onActivityResult " + resultCode );
         switch (requestCode) {
-            case REQUEST_DEVICE_LIST_SECURE:
+            case BT_REQUEST_DEVICE_LIST_SECURE:
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     bt_execActivityResultDeviceListSecure( data );
                 }
                 break;
-            case REQUEST_DEVICE_LIST_INSECURE:
+            case BT_REQUEST_DEVICE_LIST_INSECURE:
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     bt_execActivityResultDeviceListInsecure( data );
                 }
                 break;
-            case REQUEST_ADAPTER_ENABLE:
+            case BT_REQUEST_ADAPTER_ENABLE:
                 // When the request to enable Bluetooth returns
                 if (resultCode == Activity.RESULT_OK) {
                     // Bluetooth is now enabled, so set up a chat session
                 	bt_execActivityResultAdapterEnable( data );
-                    setupChat();    // ****
+                    setupChat(); 
                 } else {
                     // User did not enable Bluetooth or an error occurred
                     log_d( "BT not enabled" );
