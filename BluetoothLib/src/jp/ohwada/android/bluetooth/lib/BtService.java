@@ -24,6 +24,7 @@ import android.util.Log;
  * thread for performing data transmissions when connected.
  * 
  * base on BluetoothChatService.java
+ * https://android.googlesource.com/platform/development/+/master/samples/BluetoothChat/
  */
 public class BtService {
 

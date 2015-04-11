@@ -29,6 +29,7 @@ import android.widget.TextView;
  * Bluetooth Service Manager
  *
  * base on BluetoothChat.java
+ * https://android.googlesource.com/platform/development/+/master/samples/BluetoothChat/
  */
 public class BtManager {
 

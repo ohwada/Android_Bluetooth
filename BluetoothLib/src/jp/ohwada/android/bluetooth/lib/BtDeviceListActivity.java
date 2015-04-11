@@ -27,6 +27,9 @@ import android.widget.TextView;
 
 /**
  * DeviceListActivity
+ *
+ * base on DeviceListActivity
+ * https://android.googlesource.com/platform/development/+/master/samples/BluetoothChat/
  */
 public class BtDeviceListActivity extends Activity{
     // Debugging
