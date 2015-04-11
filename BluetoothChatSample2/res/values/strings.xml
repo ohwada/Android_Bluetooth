@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!-- 2015-03-01 K.OHWADA -->
 
 <!-- Copyright (C) 2014 The Android Open Source Project
@@ -21,7 +20,6 @@
 
     <!--  BluetoothChat -->
     <string name="send">Send</string>
-    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
 
     <!--  DeviceListActivity -->
     <string name="select_device">select a device to connect</string>

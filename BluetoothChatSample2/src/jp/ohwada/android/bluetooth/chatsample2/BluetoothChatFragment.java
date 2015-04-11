@@ -6,7 +6,6 @@ package jp.ohwada.android.bluetooth.chatsample2;
 
 import jp.ohwada.android.bluetooth.lib.BtV4Fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -67,12 +66,8 @@ public class BluetoothChatFragment extends BtV4Fragment {
         bt_setUseListString( false );
 
         // Get local Bluetooth adapter
-        boolean ret = bt_initAdapter();
         // If the adapter is null, then Bluetooth is not supported
-        if ( !ret ) {
-            bt_toast_long( R.string.bt_toast_not_available );
-            getActivity().finish();
-        }
+        bt_initAdapterAndFinish(); 
     }
 
     /**
@@ -211,32 +206,9 @@ public class BluetoothChatFragment extends BtV4Fragment {
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        log_d( "onActivityResult " + resultCode );
-        switch (requestCode) {
-            case BT_REQUEST_DEVICE_LIST_SECURE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    bt_execActivityResultDeviceListSecure( data );
-                }
-                break;
-            case BT_REQUEST_DEVICE_LIST_INSECURE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    bt_execActivityResultDeviceListInsecure( data );
-                }
-                break;
-            case BT_REQUEST_ADAPTER_ENABLE:
-                // When the request to enable Bluetooth returns
-                if (resultCode == Activity.RESULT_OK) {
-                    // Bluetooth is now enabled, so set up a chat session
-                	bt_execActivityResultAdapterEnable( data );
-                    setupChat(); 
-                } else {
-                    // User did not enable Bluetooth or an error occurred
-                    log_d( "BT not enabled" );
-                    bt_toast_short( R.string.bt_not_enabled_leaving );
-                    getActivity().finish();
-                }
+        boolean ret = bt_execActivityResultAndFinish( requestCode, resultCode, data );
+        if (ret) {
+            setupChat();
         }
     }
 
@@ -253,24 +225,7 @@ public class BluetoothChatFragment extends BtV4Fragment {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.secure_connect_scan: {
-                // Launch the DeviceListActivity to see devices and do scan
-                bt_execMenuConnectSecure();
-                return true;
-            }
-            case R.id.insecure_connect_scan: {
-                // Launch the DeviceListActivity to see devices and do scan
-                bt_execMenuConnectInsecure();
-                return true;
-            }
-            case R.id.discoverable: {
-                // Ensure this device is discoverable by others
-                bt_execMenuDiscoverable();
-                return true;
-            }
-        }
-        return false;
+        return bt_execOptionsItemSelected( item );
     }
 
     /** 

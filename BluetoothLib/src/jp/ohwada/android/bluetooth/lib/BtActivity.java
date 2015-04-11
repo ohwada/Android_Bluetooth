@@ -9,8 +9,6 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,20 +22,6 @@ public class BtActivity extends Activity {
     /** Debug */
     private boolean bt_isDebug = BtConstant.DEBUG_LOG_ACTIVITY;
     private  static final String BT_TAG_SUB = "Activity";
-
-    // Intent request codes
-    protected static final int BT_REQUEST_ADAPTER_ENABLE = BtConstant.REQUEST_ADAPTER_ENABLE;
-    protected static final int BT_REQUEST_ADAPTER_DISCOVERABLE = BtConstant.REQUEST_ADAPTER_DISCOVERABLE;
-    protected static final int BT_REQUEST_DEVICE_LIST_SECURE = BtConstant.REQUEST_DEVICE_LIST_SECURE;
-    protected static final int BT_REQUEST_DEVICE_LIST_INSECURE = BtConstant.REQUEST_DEVICE_LIST_INSECURE;
-    protected static final int BT_REQUEST_SETTINGS = BtConstant.REQUEST_SETTINGS;
-
-    // return code of enableAdapter
-    private static final int BT_RET_ENABLE_SETUP = BtManager.RET_ENABLE_SETUP;
-
-    // return code of execActivityResult
-    private static final int BT_RET_RESULT_MATCH = BtManager.RET_RESULT_MATCH;
-    private static final int BT_RET_RESULT_ENABEL_FAIL = BtManager.RET_RESULT_ENABEL_FAIL;
 
     // recieve
     private static final String BT_LF = "\n";
@@ -56,7 +40,6 @@ public class BtActivity extends Activity {
      */
     protected void bt_init() { 
         bt_mManager = new BtManager( this ); 
-        bt_mManager.setHandler( bt_serviceHandler );
     }
 
     /**
@@ -80,6 +63,14 @@ public class BtActivity extends Activity {
     protected void bt_initContentView( int res_id ) {  
         bt_mContentView = getLayoutInflater().inflate( res_id, null );
         setContentView( bt_mContentView ); 
+    }
+
+    /**
+     * setContentView
+     * @param View view
+     */
+    protected void bt_setContentView( View view ) {  
+        bt_mContentView = view;
     }
 
     /**
@@ -113,6 +104,7 @@ public class BtActivity extends Activity {
             R.string.bt_toast_lost, 
             R.string.bt_toast_connected,
             R.string.bt_toast_not_connected,
+            R.string.bt_toast_discoverable,
             R.string.bt_toast_no_action );
         bt_mManager.setPrefName( 
             BtConstant.PREF_DEVICE_NAME, 
@@ -126,7 +118,7 @@ public class BtActivity extends Activity {
     }
 
     /**
-     * initAdapter
+     * init Adapter, and finish Bluetooth is not supported
      */
     protected void bt_initAdapterAndFinish() {
         // Get local Bluetooth adapter 
@@ -364,16 +356,12 @@ public class BtActivity extends Activity {
 // --- onStart ---
     /**
      * enableService
-     * @return boolean : true enabled, false others
+     * @return boolean : true enabled, false start AdapterEnable
      */
     protected boolean bt_enableService() {
         bt_mManager.setTextViewDebugStatus();
         bt_mManager.showButtonConnect();
-        int ret = bt_mManager.enableService();
-        if ( ret == BT_RET_ENABLE_SETUP ) {
-            return true;
-        }
-        return false;
+        return bt_mManager.enableService();
     }
 
 // --- onResume --- 
@@ -403,72 +391,29 @@ public class BtActivity extends Activity {
     }
 
     /**
-     * CreateOptionsMenu secure
+     * CreateOptionsMenu secure disconnect clear settings
      * @param Menu menu
      */
     protected void bt_execCreateOptionsMenuSecure( Menu menu ) {
-        getMenuInflater().inflate( R.menu.bt_secure, menu );
+        getMenuInflater().inflate( R.menu.bt_secure_disconnect_clear_settings, menu );
+    }
+
+    /**
+     * CreateOptionsMenu secure disconnect clear
+     * @param Menu menu
+     */
+    protected void bt_execCreateOptionsMenuSecureWithoutSettings( Menu menu ) {
+        getMenuInflater().inflate( R.menu.bt_secure_disconnect_clear, menu );
     }
 
 // --- onOptionsItemSelected ---
     /**
-     * OptionsItemSelected full
+     * OptionsItemSelected
      * @param MenuItem item
      * @return boolean : true : match;  false : unmatch
      */
-    protected boolean bt_execOptionsItemSelectedFull( MenuItem item ) { 
-        return bt_mManager.execOptionsItemSelectedFull( item );
-    }
-
-    /**
-     * OptionsItemSelected secure
-     * @param MenuItem item
-     * @return boolean : true : match;  false : unmatch
-     */
-    protected boolean bt_execOptionsItemSelectedSecure( MenuItem item ) {
-        return bt_mManager.execOptionsItemSelectedSecure( item );
-    }
-
-    /**
-     * execMenu ConnectSecure
-     */
-    protected void bt_execMenuConnectSecure() {
-        bt_mManager.execMenuConnectSecure();
-    }
-
-    /**
-     * execMenu ConnectInsecure
-     */
-    protected void bt_execMenuConnectInsecure() {
-        bt_mManager.execMenuConnectInsecure();
-    }
-
-    /**
-     * execMenu Discoverable
-     */
-    protected void bt_execMenuDiscoverable() {
-        bt_mManager.execMenuDiscoverable();
-    }
-
-    /**
-     * execMenu Disconnect
-     */
-    protected void bt_execMenuDisconnect() {
-        bt_mManager.execMenuDisconnect();
-    }
-
-    /**
-     * execMenu ClearAddress
-     */
-    protected void bt_execMenuClearAddress() {
-        bt_mManager.execMenuClearAddress();
-    }
-
-    /**
-     * execMenu Settings
-     */
-    protected void bt_execMenuSettings() {
-        bt_mManager.execMenuSettings();
+    protected boolean bt_execOptionsItemSelected( MenuItem item ) { 
+        return bt_mManager.execOptionsItemSelected( item );
     }
 
 // --- startActivity ---
@@ -479,8 +424,8 @@ public class BtActivity extends Activity {
     protected void bt_initDeviceListClass( Class<?> cls ) {
         bt_mManager.initDeviceListClass( 
             cls, 
-            BT_REQUEST_DEVICE_LIST_SECURE, 
-            BT_REQUEST_DEVICE_LIST_INSECURE );
+            BtConstant.REQUEST_DEVICE_LIST_SECURE, 
+            BtConstant.REQUEST_DEVICE_LIST_INSECURE );
     }
 
     /**
@@ -488,7 +433,7 @@ public class BtActivity extends Activity {
      * @patam Class<?> cls
      */
     protected void bt_initSettingsClass( Class<?> cls ) {
-        bt_mManager.initSettingsClass( cls, BT_REQUEST_SETTINGS );
+        bt_mManager.initSettingsClass( cls, BtConstant.REQUEST_SETTINGS );
     }
 
     /**
@@ -496,78 +441,41 @@ public class BtActivity extends Activity {
      */
     protected void bt_initRequestCode() {
         bt_mManager.setRequestCodeAdapterEnable( 
-            BT_REQUEST_ADAPTER_ENABLE );
+            BtConstant.REQUEST_ADAPTER_ENABLE );
         bt_mManager.setRequestCodeAdapterDiscoverable( 
-            BT_REQUEST_ADAPTER_DISCOVERABLE ); 
+            BtConstant.REQUEST_ADAPTER_DISCOVERABLE,
+            BtConstant.DISCOVERABLE_DURATION ); 
     }
 
 // --- onActivityResult ---
     /**
-     * callback from Activity
+     * callback from Activity, and finish if Bluetooth is not enabled
      * @param int request
      * @param int result
      * @param Intent data
-     * @return boolean : true : request match;  false : request unmatch
+     * @return boolean : 
+     *      true : Bluetooth is now enabled
+     *      false : others
      */
-    protected boolean bt_execActivityResult( int request, int result, Intent data ) {
-        int ret = bt_mManager.execActivityResult( request, result, data );
-        if ( ret == BT_RET_RESULT_ENABEL_FAIL ) {
+    protected boolean bt_execActivityResultAndFinish( int request, int result, Intent data ) {
+        int ret = bt_execActivityResult( request, result, data );
+        if ( ret == BtManager.RET_RESULT_ENABEL_CANCELED ) {
             finish();
-        } else if ( ret == BT_RET_RESULT_MATCH ) {
+        } else if ( ret == BtManager.RET_RESULT_ENABEL_OK ) {
             return true;
         }
         return false;
     }
 
     /**
-     * callback from AdapterEnable
+     * callback from Activity
+     * @param int request
+     * @param int result
      * @param Intent data
+     * @return int : 
      */
-    protected void bt_execActivityResultAdapterEnable( Intent data ) {
-        bt_mManager.execActivityResultAdapterEnable( data );
-    }
-
-    /**
-     * callback from  Bluetooth Device List Secure activity
-     * @param Intent data
-     */
-    protected void bt_execActivityResultDeviceListSecure( Intent data ) {
-        bt_mManager.execActivityResultDeviceListSecure( data );
-    }
-
-    /**
-     * callback from  Bluetooth Device List Insecure activity
-     * @param Intent data
-     */
-    protected void bt_execActivityResultDeviceListInsecure( Intent data ) {
-        bt_mManager.execActivityResultDeviceListInsecure( data );
-    }
-
-    /**
-     * callback from Settings activity
-     * @param Intent data
-    */
-    protected void bt_execActivityResultSettings( Intent data ) {
-        bt_mManager.execActivityResultSettings( data );
-    }
-
-// --- Handler ---
-    /**
-     * The Handler that gets information back from the BtService
-     */
-    private final Handler bt_serviceHandler = new Handler() {
-        @Override
-        public void handleMessage( Message msg ) {
-        	bt_execServiceHandler( msg );
-        }
-    };
-
-    /**
-     * Message Handler ( handle message )
-     * @param Message msg
-     */
-    protected void bt_execServiceHandler( Message msg ) {
-        bt_mManager.execServiceHandler( msg );
+    protected int bt_execActivityResult( int request, int result, Intent data ) {
+        return bt_mManager.execActivityResult( request, result, data );
     }
 
 // --- command ---

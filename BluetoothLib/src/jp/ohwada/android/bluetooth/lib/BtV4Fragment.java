@@ -8,11 +8,10 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.MenuItem;
 
 /**
  * Fragment whitch controls Bluetooth device 
@@ -22,16 +21,6 @@ public class BtV4Fragment extends Fragment {
     /** Debug */
     private boolean bt_isDebug = BtConstant.DEBUG_LOG_ACTIVITY;
     private  static final String TAG_SUB = "Fragment";
-
-    // Intent request codes
-    protected static final int BT_REQUEST_ADAPTER_ENABLE = BtConstant.REQUEST_ADAPTER_ENABLE;
-    protected static final int BT_REQUEST_ADAPTER_DISCOVERABLE = BtConstant.REQUEST_ADAPTER_DISCOVERABLE;
-    protected static final int BT_REQUEST_DEVICE_LIST_SECURE = BtConstant.REQUEST_DEVICE_LIST_SECURE;
-    protected static final int BT_REQUEST_DEVICE_LIST_INSECURE = BtConstant.REQUEST_DEVICE_LIST_INSECURE;
-    protected static final int BT_REQUEST_SETTINGS = BtConstant.REQUEST_SETTINGS;
-
-    // return code of enableAdapter
-    private static final int BT_RET_ENABLE_SETUP = BtManager.RET_ENABLE_SETUP;
 
     /**
      * Bluetooth Manager
@@ -44,7 +33,6 @@ public class BtV4Fragment extends Fragment {
      */
     protected void bt_init() { 
         bt_mManager = new BtManager( getActivity() );
-        bt_mManager.setHandler( bt_serviceHandler ); 
     }
 
     /**
@@ -85,6 +73,7 @@ public class BtV4Fragment extends Fragment {
             R.string.bt_toast_lost, 
             R.string.bt_toast_connected,
             R.string.bt_toast_not_connected,
+            R.string.bt_toast_discoverable,
             R.string.bt_toast_no_action );
         bt_mManager.setPrefName( 
             BtConstant.PREF_DEVICE_NAME, 
@@ -95,6 +84,18 @@ public class BtV4Fragment extends Fragment {
             BtConstant.DEBUG_EMULATOR ); 
         bt_initRequestCode(); 
         bt_initListener();
+    }
+
+    /**
+     * init Adapter, and finish Bluetooth is not supported
+     */
+    protected void bt_initAdapterAndFinish() {
+        // Get local Bluetooth adapter 
+       boolean ret = bt_initAdapter();
+        // If the adapter is null, then Bluetooth is not supported
+        if ( !ret ) {
+            getActivity().finish();
+        }
     }
 
     /**
@@ -226,11 +227,7 @@ public class BtV4Fragment extends Fragment {
     protected boolean bt_enableService() {
         bt_mManager.setTextViewDebugStatus();
         bt_mManager.showButtonConnect();
-        int ret = bt_mManager.enableService();
-        if ( ret == BT_RET_ENABLE_SETUP ) {
-            return true;
-        }
-        return false;
+        return bt_mManager.enableService();
     }
 
 // --- onResume --- 
@@ -251,45 +248,12 @@ public class BtV4Fragment extends Fragment {
 
 // --- onOptionsItemSelected ---
     /**
-    　* execMenu ConnectSecure
-    　*/
-    protected void bt_execMenuConnectSecure() {
-        bt_mManager.execMenuConnectSecure();
-    }
-
-    /**
-     * execMenu ConnectInsecure
+     * OptionsItemSelected
+     * @param MenuItem item
+     * @return boolean : true : match;  false : unmatch
      */
-    protected void bt_execMenuConnectInsecure() {
-        bt_mManager.execMenuConnectInsecure();
-    }
-
-    /**
-     * execMenu Discoverable
-     */
-    protected void bt_execMenuDiscoverable() {
-        bt_mManager.execMenuDiscoverable();
-    }
-
-    /**
-     * execMenu Disconnect
-     */
-    protected void bt_execMenuDisconnect() {
-        bt_mManager.execMenuDisconnect();
-    }
-
-    /**
-     * execMenu ClearAddress
-     */
-    protected void bt_execMenuClearAddress() {
-        bt_mManager.execMenuClearAddress();
-    }
-
-    /**
-     * execMenu Settings
-     */
-    protected void bt_execMenuSettings() {
-        bt_mManager.execMenuSettings(); 
+    protected boolean bt_execOptionsItemSelected( MenuItem item ) { 
+        return bt_mManager.execOptionsItemSelected( item );
     }
 
 // --- startActivity --- 
@@ -300,8 +264,8 @@ public class BtV4Fragment extends Fragment {
     protected void bt_initDeviceListClass( Class<?> cls ) {
         bt_mManager.initDeviceListClass( 
             cls, 
-            BT_REQUEST_DEVICE_LIST_SECURE, 
-            BT_REQUEST_DEVICE_LIST_INSECURE );
+            BtConstant.REQUEST_DEVICE_LIST_SECURE, 
+            BtConstant.REQUEST_DEVICE_LIST_INSECURE );
     }
 
     /**
@@ -309,7 +273,7 @@ public class BtV4Fragment extends Fragment {
      * @patam Class<?> cls
      */
     protected void bt_initSettingsClass( Class<?> cls ) {
-        bt_mManager.initSettingsClass( cls, BT_REQUEST_SETTINGS );
+        bt_mManager.initSettingsClass( cls, BtConstant.REQUEST_SETTINGS );
     }
 
     /**
@@ -317,61 +281,41 @@ public class BtV4Fragment extends Fragment {
      */
     protected void bt_initRequestCode() {
         bt_mManager.setRequestCodeAdapterEnable( 
-            BT_REQUEST_ADAPTER_ENABLE );
+            BtConstant.REQUEST_ADAPTER_ENABLE );
         bt_mManager.setRequestCodeAdapterDiscoverable( 
-            BT_REQUEST_ADAPTER_DISCOVERABLE ); 
+            BtConstant.REQUEST_ADAPTER_DISCOVERABLE,
+            BtConstant.DISCOVERABLE_DURATION ); 
     }
 
 // --- onActivityResult ---
     /**
-     * callback from AdapterEnable
+     * callback from Activity, and finish if Bluetooth is not enabled
+     * @param int request
+     * @param int result
      * @param Intent data
+     * @return boolean : 
+     *      true : Bluetooth is now enabled
+     *      false : others
      */
-    protected void bt_execActivityResultAdapterEnable( Intent data ) {
-        bt_mManager.execActivityResultAdapterEnable( data );
-    }
-
-    /**
-     * callback from  Bluetooth Device List Secure activity
-     * @param Intent data
-     */
-    protected void bt_execActivityResultDeviceListSecure( Intent data ) {
-        bt_mManager.execActivityResultDeviceListSecure( data );
-    }
-
-    /**
-     * callback from  Bluetooth Device List Insecure activity
-     * @param Intent data
-     */
-    protected void bt_execActivityResultDeviceListInsecure( Intent data ) {
-        bt_mManager.execActivityResultDeviceListInsecure( data );
-    }
-
-    /**
-     * callback from Settings activity
-     * @param Intent data
-    */
-    protected void bt_execActivityResultSettings( Intent data ) {
-        bt_mManager.execActivityResultSettings( data );
-    }
-
-// --- Handler ---
-    /**
-     * The Handler that gets information back from the BtService
-     */
-    private final Handler bt_serviceHandler = new Handler() {
-        @Override
-        public void handleMessage( Message msg ) {
-        	bt_execServiceHandler( msg );
+    protected boolean bt_execActivityResultAndFinish( int request, int result, Intent data ) {
+        int ret = bt_execActivityResult( request, result, data );
+        if ( ret == BtManager.RET_RESULT_ENABEL_CANCELED ) {
+            getActivity().finish();
+        } else if ( ret == BtManager.RET_RESULT_ENABEL_OK ) {
+            return true;
         }
-    };
+        return false;
+    }
 
     /**
-     * Message Handler ( handle message )
-     * @param Message msg
+     * callback from Activity
+     * @param int request
+     * @param int result
+     * @param Intent data
+     * @return int : 
      */
-    protected void bt_execServiceHandler( Message msg ) {
-        bt_mManager.execServiceHandler( msg );
+    protected int bt_execActivityResult( int request, int result, Intent data ) {
+        return bt_mManager.execActivityResult( request, result, data );
     }
 
 // --- command ---

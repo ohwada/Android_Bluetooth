@@ -11,28 +11,30 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static int bt_ic_launcher=0x7f020000;
+        public static int bt_ic_action_device_access_bluetooth_searching=0x7f020000;
+        public static int bt_ic_launcher=0x7f020001;
     }
     public static final class id {
-        public static int bt_Button_list_scan=0x7f080004;
-        public static int bt_ListView_list_new_devices=0x7f080003;
-        public static int bt_ListView_list_paired_devices=0x7f080001;
-        public static int bt_TextView_list_title_new_devices=0x7f080002;
-        public static int bt_TextView_list_title_paired_devices=0x7f080000;
-        public static int bt_menu_clear=0x7f080009;
-        public static int bt_menu_connect_insecure=0x7f080006;
-        public static int bt_menu_connect_secure=0x7f080005;
-        public static int bt_menu_disconnect=0x7f080007;
-        public static int bt_menu_discoverable=0x7f080008;
-        public static int bt_menu_settings=0x7f08000a;
+        public static int bt_Button_list_scan=0x7f070004;
+        public static int bt_ListView_list_new_devices=0x7f070003;
+        public static int bt_ListView_list_paired_devices=0x7f070001;
+        public static int bt_TextView_list_title_new_devices=0x7f070002;
+        public static int bt_TextView_list_title_paired_devices=0x7f070000;
+        public static int bt_menu_clear=0x7f070009;
+        public static int bt_menu_connect_insecure=0x7f070008;
+        public static int bt_menu_connect_secure=0x7f070005;
+        public static int bt_menu_disconnect=0x7f070006;
+        public static int bt_menu_discoverable=0x7f070007;
+        public static int bt_menu_settings=0x7f07000a;
     }
     public static final class layout {
         public static int bt_activity_device_list=0x7f030000;
         public static int bt_device_name=0x7f030001;
     }
     public static final class menu {
-        public static int bt_full=0x7f070000;
-        public static int bt_secure=0x7f070001;
+        public static int bt_full=0x7f060000;
+        public static int bt_secure_disconnect_clear=0x7f060001;
+        public static int bt_secure_disconnect_clear_settings=0x7f060002;
     }
     public static final class string {
         public static int bt_activity_device_list=0x7f050001;
@@ -64,52 +66,30 @@ public final class R {
         public static int bt_menu_settings=0x7f05000b;
         /**  settings 
          */
-        public static int bt_pref_category=0x7f05001d;
-        public static int bt_pref_show_debug_default=0x7f050027;
-        public static int bt_pref_show_debug_off=0x7f050026;
-        public static int bt_pref_show_debug_on=0x7f050025;
-        public static int bt_pref_show_debug_summary=0x7f050024;
-        public static int bt_pref_show_debug_title=0x7f050023;
-        public static int bt_pref_use_addr_default=0x7f050022;
-        public static int bt_pref_use_addr_off=0x7f050021;
-        public static int bt_pref_use_addr_on=0x7f050020;
-        public static int bt_pref_use_addr_summary=0x7f05001f;
-        public static int bt_pref_use_addr_title=0x7f05001e;
+        public static int bt_pref_category=0x7f05001e;
+        public static int bt_pref_show_debug_default=0x7f050028;
+        public static int bt_pref_show_debug_off=0x7f050027;
+        public static int bt_pref_show_debug_on=0x7f050026;
+        public static int bt_pref_show_debug_summary=0x7f050025;
+        public static int bt_pref_show_debug_title=0x7f050024;
+        public static int bt_pref_use_addr_default=0x7f050023;
+        public static int bt_pref_use_addr_off=0x7f050022;
+        public static int bt_pref_use_addr_on=0x7f050021;
+        public static int bt_pref_use_addr_summary=0x7f050020;
+        public static int bt_pref_use_addr_title=0x7f05001f;
         public static int bt_title_connected_to=0x7f050014;
         /**   Bluetooth activty 
          */
         public static int bt_title_connecting=0x7f050013;
         public static int bt_title_not_connected=0x7f050015;
         public static int bt_toast_connected=0x7f05001a;
+        public static int bt_toast_discoverable=0x7f05001c;
         public static int bt_toast_failed=0x7f050018;
         public static int bt_toast_lost=0x7f050019;
-        public static int bt_toast_no_action=0x7f05001c;
+        public static int bt_toast_no_action=0x7f05001d;
         public static int bt_toast_not_available=0x7f050016;
         public static int bt_toast_not_connected=0x7f05001b;
         public static int bt_toast_not_enabled=0x7f050017;
-    }
-    public static final class style {
-        /** 
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    
-
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        
-
-        Base application theme for API 14+. This theme completely replaces
-        AppBaseTheme from BOTH res/values/styles.xml and
-        res/values-v11/styles.xml on API 14+ devices.
-    
- API 14 theme customizations can go here. 
-         */
-        public static int AppBaseTheme=0x7f060000;
-        /**  Application theme. 
- All customizations that are NOT specific to a particular API-level can go here. 
-         */
-        public static int AppTheme=0x7f060001;
     }
     public static final class xml {
         public static int bt_settings=0x7f040000;

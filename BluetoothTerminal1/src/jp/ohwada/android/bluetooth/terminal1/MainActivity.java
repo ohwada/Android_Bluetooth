@@ -115,7 +115,7 @@ public class MainActivity extends BtActivity {
             mTerminalView.cleanTerminal();
             return true;
         }
-        bt_execOptionsItemSelectedSecure( item ); 
+        bt_execOptionsItemSelected( item ); 
         return true;
     }
 
@@ -124,7 +124,7 @@ public class MainActivity extends BtActivity {
      */
     @Override
     public void onActivityResult( int request, int result, Intent data ) {
-        bt_execActivityResult( request, result, data );
+        bt_execActivityResultAndFinish( request, result, data );
     }
 
 // --- comand ---

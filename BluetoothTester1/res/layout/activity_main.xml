@@ -49,6 +49,33 @@
     </RadioGroup>
 
     <LinearLayout
+        android:id="@+id/LinearLayout_interval"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="4dp" >
+
+        <TextView
+            android:text="@string/text_interval" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+			    	
+        <EditText
+            android:id="@+id/EditText_interval"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" 
+            android:layout_weight="1" 
+            android:inputType="text" />
+    
+        <Button
+            android:id="@+id/Button_interval_set"
+            android:text="@string/button_interval_set" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+			            
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/LinearLayout_connect"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

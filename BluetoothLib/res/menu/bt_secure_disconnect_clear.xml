@@ -18,13 +18,6 @@
     <item 
         android:id="@+id/bt_menu_clear"
         android:title="@string/bt_menu_clear"         
-        android:orderInCategory="100"
-        android:showAsAction="never" />
-
-    <item 
-        android:id="@+id/bt_menu_settings"
-        android:title="@string/bt_menu_settings"
-        android:orderInCategory="100"
         android:showAsAction="never" />
                   
 </menu>

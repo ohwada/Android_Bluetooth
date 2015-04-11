@@ -41,6 +41,7 @@
     <string name="bt_toast_lost">Device connection was lost</string>
     <string name="bt_toast_connected">Connected to </string>
     <string name="bt_toast_not_connected">You are not connected to a device</string>
+    <string name="bt_toast_discoverable">My bluetooth is discoverable</string>
     <string name="bt_toast_no_action">No Action in debug</string>
 
 <!-- settings -->

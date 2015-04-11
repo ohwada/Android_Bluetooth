@@ -57,6 +57,9 @@ public class BtConstant {
     public static final String SERVICE_UUID_CHAT_INSECURE ="8ce255c0-200a-11e0-ac64-0800200c9a66";
     public static final String SERVICE_UUID_SPP = "00001101-0000-1000-8000-00805F9B34FB";
 
+    // discoverable duration time
+    public static final int DISCOVERABLE_DURATION = 300;
+
     /* log */
     public static final String LOG_COLON = ": ";
 }

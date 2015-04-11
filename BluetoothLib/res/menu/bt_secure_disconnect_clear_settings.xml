@@ -15,17 +15,6 @@
         android:title="@string/bt_menu_disconnect"
         android:showAsAction="ifRoom|withText" />
 
-    <item android:id="@+id/bt_menu_discoverable"
-        android:icon="@android:drawable/ic_menu_mylocation"
-        android:title="@string/bt_menu_discoverable" />
-        android:showAsAction="ifRoom|withText" />>
-
-    <item 
-        android:id="@+id/bt_menu_connect_insecure"
-        android:icon="@android:drawable/ic_menu_search"
-        android:title="@string/bt_menu_connect_insecure"
-        android:showAsAction="never" />
-
     <item 
         android:id="@+id/bt_menu_clear"
         android:title="@string/bt_menu_clear"         

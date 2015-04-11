@@ -10,6 +10,8 @@
     <string name="radiobutton_profile_serial">Serial Port</string>
     <string name="radiobutton_mode_echo">Echoback</string>
     <string name="radiobutton_mode_tester">Tester</string>
+    <string name="text_interval">Interval</string>
+    <string name="button_interval_set">Set</string>
     <string name="button_start">Start</string>
     <string name="button_stop">Stop</string>
     <string name="button_reset">Reset</string>

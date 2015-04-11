@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -37,7 +39,6 @@ public class MainActivity extends BtActivity {
     private static final int MODE_TESTER = 1;
 
     // timer
-    private static final int TIMER_DELAY = 1;
     private static final int TIMER_WHAT = 11;
 
     // test param
@@ -50,6 +51,8 @@ public class MainActivity extends BtActivity {
     private SequenceChecker mSequenceChecker;
 
     // UI
+    private LinearLayout mLinearLayoutInterval;
+    private EditText mEditTextInterval;
     private Button mButtonStart;
     private Button mButtonStop;
     private Button mButtonReset;
@@ -66,6 +69,7 @@ public class MainActivity extends BtActivity {
     // timer
     private boolean isTimerStart;
     private boolean isTimerRunning;
+    private int mTimerInterval = 10; // 10 msec
 	
     /**
      * === onCreate ===
@@ -107,6 +111,19 @@ public class MainActivity extends BtActivity {
         rgMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged( RadioGroup group, int checkedId ) { 
                 execModeChanged( group, checkedId );
+            }
+        });
+
+        mLinearLayoutInterval = (LinearLayout) findViewById( R.id.LinearLayout_interval );
+
+        mEditTextInterval = (EditText) findViewById( R.id.EditText_interval );
+        execEditTextInterval();
+
+        Button btnSet = (Button) findViewById( R.id.Button_interval_set );
+        btnSet.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View view ) {
+                execSet();
             }
         });
 
@@ -166,8 +183,6 @@ public class MainActivity extends BtActivity {
     @Override
     public synchronized void onPause() {
         super.onPause();
-        stopTimer();
-        bt_stopService();
     }
 
     /**
@@ -194,8 +209,7 @@ public class MainActivity extends BtActivity {
      */
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
-        bt_execOptionsItemSelectedFull( item );
-        return true;
+        return bt_execOptionsItemSelected( item );
     }
 
     /**
@@ -203,7 +217,7 @@ public class MainActivity extends BtActivity {
      */
     @Override
     public void onActivityResult( int request, int result, Intent data ) {
-        bt_execActivityResult( request, result, data );
+        bt_execActivityResultAndFinish( request, result, data );
     }
 
 // --- command ---
@@ -225,6 +239,7 @@ public class MainActivity extends BtActivity {
      */
     private void setModeEcho() { 
         mMode = MODE_ECHO;
+        mLinearLayoutInterval.setVisibility( View.GONE );
         mButtonStart.setVisibility( View.INVISIBLE );
         mButtonStop.setVisibility( View.INVISIBLE );
         bt_setShowButton( false );
@@ -236,6 +251,7 @@ public class MainActivity extends BtActivity {
      */
     private void setModeTester() { 
         mMode = MODE_TESTER;
+        mLinearLayoutInterval.setVisibility( View.VISIBLE );
         mButtonStart.setVisibility( View.VISIBLE );
         mButtonStop.setVisibility( View.VISIBLE );
         bt_setShowButton( true );
@@ -257,6 +273,29 @@ public class MainActivity extends BtActivity {
             bt_setServiceProfileSerial();
             bt_startService();
         }
+    }
+
+    /**
+     * execSet
+     */
+    private void execSet() {
+        String str = mEditTextInterval.getText().toString();
+        if ( str.length() > 0 ) {
+            int delay = parseInt( str );
+            if ( delay > 0 ) {
+                mTimerInterval = delay;
+            }
+        }
+        execEditTextInterval();
+    }
+
+    /**
+     * execEditTextInterval
+     */
+    private void execEditTextInterval() {
+        String interval = Integer.toString( mTimerInterval );
+        mEditTextInterval.setText( interval ); 
+        mEditTextInterval.setHint( interval ); 
     }
 
     /**
@@ -392,7 +431,7 @@ public class MainActivity extends BtActivity {
             if (running) {
                 updateSend();
                 timerHandler.sendMessageDelayed(
-                    Message.obtain(timerHandler, TIMER_WHAT), TIMER_DELAY );               
+                    Message.obtain(timerHandler, TIMER_WHAT), mTimerInterval );               
              } else {
                 timerHandler.removeMessages(TIMER_WHAT);
             }
@@ -408,7 +447,7 @@ public class MainActivity extends BtActivity {
             if (isTimerRunning) {
                 updateSend();
                 sendMessageDelayed(
-                    Message.obtain(this, TIMER_WHAT), TIMER_DELAY);
+                    Message.obtain(this, TIMER_WHAT), mTimerInterval);
             }
         }
     };

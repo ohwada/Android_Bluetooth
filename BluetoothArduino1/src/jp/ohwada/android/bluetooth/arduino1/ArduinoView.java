@@ -7,6 +7,8 @@ package jp.ohwada.android.bluetooth.arduino1;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import jp.ohwada.android.bluetooth.arduino1.R;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.os.SystemClock;
@@ -105,7 +107,7 @@ public class ArduinoView {
      */
     public void initTextViewSwitch( int res_id ) {
         mTextViewSwitch = (TextView) mContentView.findViewById( res_id );
-        mTextViewSwitch.setText( mLabelOn );
+        setTextViewSwitchOff();
     }
 
     /**
@@ -238,15 +240,31 @@ public class ArduinoView {
     private void execRecvMsg( String str ) {
         if ( str == null ) return;
         if ( str.startsWith( "B0" )) {
-            mTextViewSwitch.setText( mLabelOff );	
-            mTextViewSwitch.setTextColor( Color.BLACK );
+            setTextViewSwitchOff();
         } else if ( str.startsWith( "B1" )) {
-            mTextViewSwitch.setText( mLabelOff );	
-            mTextViewSwitch.setTextColor( Color.RED );
+            setTextViewSwitchOn();
         } else if ( str.startsWith( "A" )) {
             int value = parseInt( str.substring( 1 ) );
             mGraphView.setData( value );
         }
+    }
+
+    /**
+     * set TextViewSwitch Off
+     */
+    private void setTextViewSwitchOff() {
+        mTextViewSwitch.setText( mLabelOff );	
+        mTextViewSwitch.setTextColor( Color.BLACK );
+        mTextViewSwitch.setBackgroundResource( R.drawable.background_white );
+    }
+
+   /**
+     * set TextViewSwitch On
+     */
+    private void setTextViewSwitchOn() {
+        mTextViewSwitch.setText( mLabelOn );	
+        mTextViewSwitch.setTextColor( Color.RED );
+        mTextViewSwitch.setBackgroundResource( R.drawable.background_green );
     }
 
     /**

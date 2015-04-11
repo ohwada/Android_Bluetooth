@@ -122,7 +122,7 @@ public class MainActivity extends BtActivity {
             mArduinoView.showLog();
             return true;
         }
-        bt_execOptionsItemSelectedSecure( item );
+        bt_execOptionsItemSelected( item );
         return true;
     }
 
@@ -131,7 +131,7 @@ public class MainActivity extends BtActivity {
      */
     @Override
     public void onActivityResult( int request, int result, Intent data ) {
-        bt_execActivityResult( request, result, data );
+        bt_execActivityResultAndFinish( request, result, data );
     }
 
 // --- comand ---

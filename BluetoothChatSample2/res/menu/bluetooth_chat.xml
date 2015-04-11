@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 2015-03-01 K.OHWADA -->
+
 <!-- Copyright (C) 2014 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +18,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/secure_connect_scan"
+        android:id="@+id/bt_menu_connect_secure"
         android:icon="@drawable/ic_action_device_access_bluetooth_searching"
         android:showAsAction="ifRoom"
         android:title="@string/secure_connect"/>
 
     <item
-        android:id="@+id/insecure_connect_scan"
+        android:id="@+id/bt_menu_connect_insecure"
         android:showAsAction="never"
         android:title="@string/insecure_connect"/>
 
     <item
-        android:id="@+id/discoverable"
+        android:id="@+id/bt_menu_discoverable"
         android:showAsAction="never"
         android:title="@string/discoverable"/>
 

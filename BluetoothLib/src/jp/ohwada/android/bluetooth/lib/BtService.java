@@ -2,22 +2,6 @@
  * 2015-03-01 K.OHWADA
  */ 
 
-/*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package jp.ohwada.android.bluetooth.lib;
 
 import java.io.IOException;
@@ -30,9 +14,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 /**
@@ -40,6 +22,8 @@ import android.util.Log;
  * connections with other devices. It has a thread that listens for
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
+ * 
+ * base on BluetoothChatService.java
  */
 public class BtService {
 
@@ -54,35 +38,36 @@ public class BtService {
     private boolean isHandlerWrite = BtConstant.SERVICE_HANDLER_WRITE;
 
     // Name for the SDP record when creating server socket
-    private static final String NAME_SECURE = "BluetoothSecure";
-    private static final String NAME_INSECURE = "BluetoothInsecure";
+    private static final String NAME_SECURE = "BluetoothChatSecure";
+    private static final String NAME_INSECURE = "BluetoothChatInsecure";
 
     /* Message types sent from the BluetoothService Handler */
     public static final int WHAT_READ = 101;
     public static final int WHAT_WRITE = 102;
     public static final int WHAT_STATE_CHANGE = 103;
-    public static final int WHAT_DEVICE_NAME = 104;
-    public static final int WHAT_FAILED = 105;
-    public static final int WHAT_LOST = 106;
+    public static final int WHAT_FAILED = 104;
+    public static final int WHAT_LOST = 105;
 
     /* Constants that indicate the current connection state */
     public static final int STATE_NONE = 201;       // we're doing nothing
     public static final int STATE_LISTEN = 202;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 203; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 204;  // now connected to a remote device
-    
-    /* Key names received from the BtService Handler */
-    public static final String BUNDLE_DEVICE_NAME = "device_name";
 
     // connect mode
     public static final boolean MODE_SECURE = true;
     public static final boolean MODE_INSECURE = false;
 
+    // socket type
+    private static final String SOCKET_TYPE_SECURE = "secure";
+    private static final String SOCKET_TYPE_INSECURE = "insecure";
+
     // handler
     private static final int ARG1_NONE = -1;
     private static final int ARG2_NONE = -1;
 
-    // Unique UUID 
+    // Unique UUID
+    // default SPP, able to change chat profile  
     private UUID mUuidSecure = UUID.fromString( BtConstant.SERVICE_UUID_SPP );
     private UUID mUuidInsecure = UUID.fromString( BtConstant.SERVICE_UUID_SPP );
 
@@ -92,12 +77,16 @@ public class BtService {
 
     // Member fields
     private final BluetoothAdapter mAdapter;
-    private Handler mHandler;
     private AcceptThread mSecureAcceptThread;
     private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
+
+    // note: remove final for multi activity
+    private Handler mHandler;
+
+    // note: add for save param
     private String mDeviceName = null;
     private String mDeviceAddress = null;
 
@@ -114,24 +103,28 @@ public class BtService {
 
     /**
      * Constructor
+     * note: add for muilti activity
      * @param context  The UI Activity Context
      */
     public BtService( Context context ) {
+        log_debug( "create BtService" );
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
     }
 
     /**
      * setHandler
-     * specify for every activity.
-     * @param Handler handler
+     * note: add for muilti activity
+     * @param handler A Handler to send messages back to the UI Activity
      */
     public void setHandler( Handler handler ) {
+        log_debug( "handler " + handler.toString() );
         mHandler = handler;
     }
 
     /**
      * setUuid
+     * note: add for change profile
      * @param String secure UUID
      * @param String insecure UUID 
      */
@@ -141,11 +134,12 @@ public class BtService {
     }
 
     /**
-     * setRevBuffer
+     * setRecvBuffer
+     * note: add for change plane of Recieve Buffer
      * @param int plane
      * @param int bytes
      */
-    public void setRevBuffer( int plane, int bytes ) {
+    public void setRecvBuffer( int plane, int bytes ) {
         mRecvBufferPlane = plane;
         mRecvBufferByte = bytes;
     }
@@ -171,7 +165,8 @@ public class BtService {
     }
 
     /**
-     * get DeviceName
+     * get Device Name
+     * note: add for save param
      * @return String
      */
     public String getDeviceName() {
@@ -179,7 +174,8 @@ public class BtService {
     }
 
     /**
-     * get DeviceAddress
+     * get Device Address
+     * note: add for save param
      * @return String
      */
     public String getDeviceAddress() {
@@ -280,14 +276,19 @@ public class BtService {
         mConnectedThread = new ConnectedThread(socket, socketType);
         mConnectedThread.start();
 
+        // note: remove this message, 
+        // 　　　the device name can be got in the added method
+        //
         // Send the name of the connected device back to the UI Activity
+//        Message msg = mHandler.obtainMessage(BluetoothChat.MESSAGE_DEVICE_NAME);
+//        Bundle bundle = new Bundle();
+//        bundle.putString(BluetoothChat.DEVICE_NAME, device.getName());
+//        msg.setData(bundle);
+//        mHandler.sendMessage(msg);
+
+        // save device param
         mDeviceName = device.getName();
         mDeviceAddress = device.getAddress();
-        Message msg = mHandler.obtainMessage( WHAT_DEVICE_NAME );
-        Bundle bundle = new Bundle();
-        bundle.putString( BUNDLE_DEVICE_NAME, mDeviceName );
-        msg.setData(bundle);
-        mHandler.sendMessage(msg);
 
         setState(STATE_CONNECTED);
     }
@@ -343,10 +344,11 @@ public class BtService {
      */
     private void connectionFailed() {
         // Send a failure message back to the Activity
+        // note: change toast message to message type
         mHandler.sendMessage( 
             mHandler.obtainMessage( WHAT_FAILED ) );
 
-        // *** move to manager
+        // note: move to manager
         // Start the service over to restart listening mode
 //        BtService.this.start();
     }
@@ -356,10 +358,11 @@ public class BtService {
      */
     private void connectionLost() {
         // Send a failure message back to the Activity
+        // note: change toast message to message type
         mHandler.sendMessage(
             mHandler.obtainMessage( WHAT_LOST ) );
 
-        // *** move to manager
+        // note: move to manager
         // Start the service over to restart listening mode
 //        BtService.this.start();
     }
@@ -379,7 +382,7 @@ public class BtService {
          */
         public AcceptThread( boolean secure ) {
             BluetoothServerSocket tmp = null;
-            mSocketType = secure ? "Secure":"Insecure";
+            mSocketType = secure ? SOCKET_TYPE_SECURE : SOCKET_TYPE_INSECURE;
 
             // Create a new listening server socket
             try {
@@ -408,6 +411,13 @@ public class BtService {
 
             // Listen to the server socket if we're not connected
             while (mState != STATE_CONNECTED) {
+                // note: add for sometimes ServerSocket is lost
+                if ( mmServerSocket == null ) {
+                    log_error( "ServerSocket is lost " + this );
+                    connectionLost();
+                    break;
+                }
+                // try to accept connection
                 try {
                     // This is a blocking call and will only return on a
                     // successful connection or an exception
@@ -425,8 +435,8 @@ public class BtService {
                         case STATE_LISTEN:
                         case STATE_CONNECTING:
                             // Situation normal. Start the connected thread.
-                            connected(socket, socket.getRemoteDevice(),
-                                    mSocketType);
+                            connected(
+                                socket, socket.getRemoteDevice(), mSocketType );
                             break;
                         case STATE_NONE:
                         case STATE_CONNECTED:
@@ -451,6 +461,9 @@ public class BtService {
          */
         public void cancel() {
             log_debug( "Socket Type: " + mSocketType + " cancel " + this );
+            // note: add for sometimes ServerSocket is lost
+            if ( mmServerSocket == null ) return;
+            // try to close
             try {
                 mmServerSocket.close();
             } catch (IOException e) {
@@ -477,7 +490,7 @@ public class BtService {
         public ConnectThread( BluetoothDevice device, boolean secure ) {
             mmDevice = device;
             BluetoothSocket tmp = null;
-            mSocketType = secure ? "Secure" : "Insecure";
+            mSocketType = secure ? SOCKET_TYPE_SECURE : SOCKET_TYPE_INSECURE;
 
             // Get a BluetoothSocket for a connection with the
             // given BluetoothDevice
@@ -516,8 +529,9 @@ public class BtService {
                 try {
                     mmSocket.close();
                 } catch (IOException e2) {
-                    log_error( "unable to close() " + mSocketType +
-                            " socket during connection failure" );
+                    log_error( 
+                        "unable to close() " + mSocketType + 
+                        " socket during connection failure" );
                     if (D) e2.printStackTrace();
                 }
                 connectionFailed();
@@ -582,7 +596,8 @@ public class BtService {
          */
         public void run() {
             log_info( "BEGIN ConnectedThread" );
-             // multi buffers
+
+             // note: add for multi buffers
             byte[][] buffers = new byte[ mRecvBufferPlane ][ mRecvBufferByte ];
             byte[] buf = new byte[ mRecvBufferByte ];
             int plane = 0;
@@ -590,6 +605,7 @@ public class BtService {
 
             // Keep listening to the InputStream while connected
             while (true) {
+                // note: add for multi buffers
                 // set from multi buffer
                 buf = buffers[ plane ];
                 // change plane for next
@@ -597,6 +613,7 @@ public class BtService {
                 if ( plane >= mRecvBufferPlane ) {
                     plane = 0;
                 }
+                // try to read
                 length = 0;
                 try {
                     // Read from the InputStream
@@ -605,12 +622,13 @@ public class BtService {
                     log_error( "disconnected" );
                     if (D) e.printStackTrace();
                     connectionLost();
-                    // *** move to manager
+                    // note: move to manager
                     // Start the service over to restart listening mode
 //                    BtService.this.start();
                     break;
                 }
                 if ( length == 0 ) continue;
+                // note: add for debug
                 if ( isDebugRead ) {
                     log_bytes( "r", buf, length );
                 }
@@ -626,10 +644,12 @@ public class BtService {
          * @param buffer  The bytes to write
          */
         public void write(byte[] buffer) {
-            log_debug( "ConnectedThread write" );
+            log_debug( "ConnectedThread write" );            
+            // note: add for debug
             if ( isDebugWrite ) {
                 log_bytes( "w", buffer, buffer.length );
             }
+            // try to write
             try {
                 mmOutStream.write(buffer);
                 if ( isHandlerWrite ) {
@@ -691,7 +711,7 @@ public class BtService {
     }
 
     /**
-     * log_bytes
+     * log_bytes for debug
      * @param String str
      * @param byte[] bytes
      * @param int length
