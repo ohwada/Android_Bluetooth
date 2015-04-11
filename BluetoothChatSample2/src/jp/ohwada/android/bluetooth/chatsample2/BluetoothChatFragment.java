@@ -27,6 +27,9 @@ import com.example.android.common.logger.Log;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
+ *
+ * base on BluetoothChatFragment
+ * https://developer.android.com/samples/BluetoothChat/index.html
  */
 public class BluetoothChatFragment extends BtV4Fragment {
 

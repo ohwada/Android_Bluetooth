@@ -16,6 +16,9 @@ import android.view.View;
 
 /**
  * Activity whitch controls Bluetooth device
+ *
+ * base on BluetoothChat.java
+ * https://android.googlesource.com/platform/development/+/master/samples/BluetoothChat/
  */
 public class BtActivity extends Activity {
 

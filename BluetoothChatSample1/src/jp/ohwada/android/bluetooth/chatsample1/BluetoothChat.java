@@ -23,6 +23,9 @@ import android.widget.TextView;
 
 /**
  * This is the main Activity that displays the current chat session.
+ *
+ * base on BluetoothChat.java
+ * https://android.googlesource.com/platform/development/+/master/samples/BluetoothChat/
  */
 public class BluetoothChat extends BtActivity {
 

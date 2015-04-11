@@ -15,6 +15,9 @@ import android.view.MenuItem;
 
 /**
  * Fragment whitch controls Bluetooth device 
+ *
+ * base on BluetoothChatFragment.java
+ * https://developer.android.com/samples/BluetoothChat/index.html
  */
 public class BtV4Fragment extends Fragment {
 
